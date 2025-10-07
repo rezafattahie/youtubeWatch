@@ -1,5 +1,9 @@
 export async function handler(event) {
-  const backendlessBase = 'https://api.backendless.com/ED04C550-BD52-4725-B4B2-A6EA07C2BB58/3949C5B6-D203-4C3B-82F6-3CACBACE5474';
+  const appId = process.env.BACKENDLESS_APP_ID;
+  const apiKey = process.env.BACKENDLESS_API_KEY;
+  const baseUrl = process.env.BACKENDLESS_BASE_URL || 'https://api.backendless.com';
+
+  const backendlessBase = `${baseUrl}/${appId}/${apiKey}`;
 
   const path = event.path.replace('/api', '');
   const query = event.queryStringParameters
@@ -14,7 +18,6 @@ export async function handler(event) {
       'Content-Type': 'application/json',
     },
   };
-
 
   if (!['GET', 'HEAD'].includes(event.httpMethod) && event.body) {
     fetchOptions.body = event.body;
