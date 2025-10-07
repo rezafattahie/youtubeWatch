@@ -1,0 +1,10 @@
+<div
+  class="fixed top-[50px] right-0 mt-2 p-2 bg-slate-200 m-l-2 w-20 text-center h-14 rounded-l-2xl transaction-all duration-200"
+  [ngClass]="showHafen ? 'h-[calc(100vh-70px)] w-56 text-start' : ''"
+>
+  <app-icon
+    (click)="showHafen = !showHafen"
+    name="wortHafen"
+    class="w-10 cursor-pointer text-blue-500 hover:text-blue-700"
+  ></app-icon>
+</div>

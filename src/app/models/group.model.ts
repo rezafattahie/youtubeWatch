@@ -1,0 +1,1 @@
+export type Groups = 'EasyGerman' | 'Films' | 'Others' | 'Grammars' | 'News'

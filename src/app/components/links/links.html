@@ -1,0 +1,70 @@
+<aside class="h-[calc(100vh-67px)] mt-2">
+  <div class="h-full overflow-x-hidden bg-slate-900 w-80 text-slate-300 rounded-r-2xl">
+    <!-- actions -->
+    <div class="flex flex-row-reverse items-center justify-start mt-5 px-4 gap-3 relative">
+      <app-icon
+        (click)="drawer.open(); selectedFormField = newLinkFormfields"
+        name="add"
+        class="w-4 text-slate-400 hover:text-slate-200 cursor-pointer"
+      ></app-icon>
+      <app-icon
+        name="search"
+        (click)="drawer.open(); selectedFormField = searchFormFields"
+        class="w-5 text-slate-400 hover:text-slate-200 cursor-pointer"
+      ></app-icon>
+      <app-drawer-form
+        #drawer
+        [btnText]="selectedFormField == searchFormFields ? 'Find' : 'Save'"
+        [fields]="selectedFormField"
+        (formSubmit)="handleFormSubmit($event)"
+      ></app-drawer-form>
+    </div>
+
+    <!-- link list -->
+    <ul class="p-2 w-full h-[calc(100vh-133px)] overflow-y-auto">
+      @if (videoLinks().length == 0) {
+      <div class="text-center m-10 ">
+        <app-icon
+          name="spin"
+          class="w-30 text-center text-lime-600 animate-[spin_2s_ease-out_infinite]"
+        ></app-icon
+        ><p class="text-xs">Getting {{ activeType() }} list...</p>
+      </div>
+
+      }@else { @for (link of videoLinks(); track $index) {
+      <li
+        class="flex flex-col items-between border-2 border-gray-100/10 justify-between hover:scale-100 scale-95 px-2 pt-2 transaction-all rounded-lg duration-200 hover:bg-slate-500 bg-slate-500/60 mb-1"
+      >
+        <a
+          class="flex items-start gap-2 justify-start w-full cursor-pointer hover:text-lime-300 text-lime-200"
+          (click)="onSelectVideo(link)"
+        >
+          <app-icon
+            name="subtitle"
+            class="w-6"
+            [ngClass]="link.subtitle ? 'text-white' : 'text-gray-900/70'"
+          ></app-icon>
+          <span>{{ link.title }}</span>
+        </a>
+        <div class="flex items-center w-full justify-between">
+          <p class="text-slate-200/40 text-sm">{{ link.sentOn | date : 'dd. MMMM yyyy' }}</p>
+          <div class="flex items-center">
+            <app-icon
+              name="edit"
+              class="w-4 text-slate-400 hover:text-slate-700 cursor-pointer"
+            ></app-icon>
+            <app-icon
+              name="delete"
+              class="w-7 text-slate-400 hover:text-slate-700 cursor-pointer"
+            ></app-icon>
+            <app-icon
+              name="move"
+              class="w-5 text-slate-400 hover:text-slate-700 cursor-pointer"
+            ></app-icon>
+          </div>
+        </div>
+      </li>
+      }}
+    </ul>
+  </div>
+</aside>

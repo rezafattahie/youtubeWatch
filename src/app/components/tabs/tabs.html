@@ -1,0 +1,38 @@
+<!-- Tab selector -->
+<ul class="flex gap-5 w-screen items-center justify-center text-center text-xs text-lime-100 bg-slate-900/90">
+  @for (item of tabs; track $index) {
+  <li (click)="toggleTab(item.type)" [routerLink]="item.type">
+    <a
+      class="inline-block py-4 w-30 transition-all ease-in duration-100 cursor-pointer rounded-b-2xl"
+      [ngClass]="activeType === item.type ? item.activeClass : ''"
+      [class]="item.hoverClass"
+    >
+      {{ item.label }}
+    </a>
+  </li>
+  }
+</ul>
+
+<!-- Tab content -->
+<div class="flex relative h-full w-full delay-200">
+  <app-links [activeType]="activeType" (selectedVideo)="onGetvideo($event)"></app-links>
+  <div
+    [ngClass]="
+      selectedVideo.address == '' ? 'w-full flex flex-row items-center justify-center' : ''
+    "
+  >
+    @if (selectedVideo.address == '') {
+    <app-icon name="youtube" class="text-slate-700/70 w-120 2xl:w-200 opacity-70"></app-icon>} @else
+    {
+    <app-player
+      [selectedVideo]="selectedVideo"
+      id="yt-player"
+      class="w-[calc(100vw-560px)] h-[calc(100vh-150px)] my-2 mx-2"
+    ></app-player>
+    <app-subtitle></app-subtitle>
+    }
+    <app-wordbook></app-wordbook>
+  </div>
+  <!-- <ng-content></ng-content> -->
+  <router-outlet></router-outlet>
+</div>
