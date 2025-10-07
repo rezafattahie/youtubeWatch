@@ -1,5 +1,9 @@
+[build]
+  command = "npm run build"
+  publish = "dist/wortHafen/browser"
+
 [functions]
-directory = "netlify/functions"
+  directory = "netlify/functions"
 
 [[redirects]]
   from = "/api/*"
