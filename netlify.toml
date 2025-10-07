@@ -10,8 +10,12 @@
   to = "/.netlify/functions/proxy"
   status = 200
 
-# برای Single Page App routing
 [[redirects]]
   from = "/wortHafen/*"
   to = "/wortHafen/index.html"
   status = 200
+
+[[redirects]]
+  from = "/"
+  to = "/wortHafen/"
+  status = 301
