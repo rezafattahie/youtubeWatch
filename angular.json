@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "wortHafen": {
+    "worthafen": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -59,10 +59,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "wortHafen:build:production"
+              "buildTarget": "worthafen:build:production"
             },
             "development": {
-              "buildTarget": "wortHafen:build:development"
+              "buildTarget": "worthafen:build:development"
             }
           },
           "defaultConfiguration": "development"
