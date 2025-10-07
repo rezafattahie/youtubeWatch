@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "ng build --configuration production --base-href /wortHafen/"
   publish = "dist/wortHafen/browser"
 
 [functions]
@@ -8,4 +8,10 @@
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/proxy"
+  status = 200
+
+# برای Single Page App routing
+[[redirects]]
+  from = "/wortHafen/*"
+  to = "/wortHafen/index.html"
   status = 200
