@@ -1,5 +1,5 @@
 [build]
-  command = "ng build --configuration production --base-href /worthafen/ --deploy-url /worthafen/"
+  command = "ng build --configuration production --base-href /worthafen/"
   publish = "dist/worthafen/browser"
 
 [functions]
