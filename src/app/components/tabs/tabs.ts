@@ -22,9 +22,9 @@ export class Tabs {
   addeword = false;
    selectedVideo: ILink = {
     title: '',
-    address: '',
+    youtubeId: '',
     __class: '',
-    group: 'EasyGerman',
+    group: 'easygerman',
     objectId: '',
     ownerId: 0,
     subtitle: '',

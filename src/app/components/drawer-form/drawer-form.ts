@@ -1,7 +1,7 @@
-import { Component, EventEmitter, Input, Output, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Output, input, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { IForm } from '../../models/forms.model';
 
 @Component({
@@ -11,48 +11,56 @@ import { IForm } from '../../models/forms.model';
   providers: [provideNgxMask({ dropSpecialCharacters: false })],
   templateUrl: './drawer-form.html',
 })
-export class DrawerForm implements OnChanges {
-  @Input() fields: IForm[] = [];
-  @Input() title = '';
-  @Input() btnText = 'Submit';
+export class DrawerForm {
+  fields = input<IForm[]>([]);
+  title = input('');
+  btnText = input();
+
   @Output() formSubmit = new EventEmitter<any>();
   @Output() closed = new EventEmitter<void>();
 
-  form!: FormGroup;
-  isOpen = false;
+  form = signal<FormGroup | null>(null);
+  isOpen = signal(false);
 
-  constructor(private fb: FormBuilder) {}
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['fields'] && this.fields.length > 0) {
-      this.buildForm();
-    }
+  constructor(private fb: FormBuilder) {
+    effect(() => {
+      const f = this.fields();
+      if (f?.length) {
+        this.buildForm(f);
+      }
+    });
   }
 
-  private buildForm() {
+  private buildForm(fields: IForm[]) {
     const group: any = {};
-    for (const field of this.fields) {
-      group[field.name] = ['', field.validators || []];
+
+    for (const field of fields) {
+      group[field.name] = new FormControl(
+        { value: field.value ?? '', disabled: field.disabled ?? false },
+        field.validators || []
+      );
     }
-    this.form = this.fb.group(group);
+
+    this.form.set(this.fb.group(group));
   }
 
   open() {
-    this.isOpen = true;
+    this.isOpen.set(true);
   }
 
   close() {
-    this.isOpen = false;
+    this.isOpen.set(false);
     this.closed.emit();
   }
 
   submitForm() {
-    if (this.form.valid) {
-      this.formSubmit.emit(this.form.value);
+    const frm = this.form();
+    if (frm?.valid) {
+      this.formSubmit.emit(frm.getRawValue());
       this.close();
+      frm.reset();
     } else {
-      this.form.markAllAsTouched();
+      frm?.markAllAsTouched();
     }
-    this.form.reset();
   }
 }

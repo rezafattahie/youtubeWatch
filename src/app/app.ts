@@ -11,37 +11,37 @@ import { Groups } from './models/group.model';
 })
 export class App {
   protected readonly title = signal('Wort Hafen');
-  type: Groups = 'EasyGerman';
+  type: Groups = 'easygerman';
   @Output() toggleTransaction?: EventEmitter<void> = new EventEmitter();
 
   tabInfos: ITabInfo[] = [
     {
-      type: 'EasyGerman',
+      type: 'easygerman',
       label: 'Easy German',
       hoverClass: 'hover:text-emerald-500 hover:bg-emerald-400/5',
       activeClass: 'text-emerald-500 bg-emerald-400/10 scale-x-130 font-medium border-t-1',
     },
 
     {
-      type: 'Films',
+      type: 'films',
       label: 'Film & Series',
       hoverClass: 'hover:text-violet-500 hover:bg-violet-400/5',
       activeClass: 'text-violet-500 bg-violet-400/10 scale-x-130 font-medium border-t-1',
     },
     {
-      type: 'News',
+      type: 'news',
       label: 'Tagesschau',
       hoverClass: 'hover:text-blue-500 hover:bg-blue-400/5',
       activeClass: 'text-blue-500 bg-blue-400/10 scale-x-130 font-medium border-t-1',
     },
     {
-      type: 'Grammars',
+      type: 'grammars',
       label: 'Grammar',
       hoverClass: 'hover:text-rose-400 hover:bg-rose-400/5',
       activeClass: 'bg-rose-400/10 text-rose-400 scale-x-130 font-medium border-t-1',
     },
     {
-      type: 'Others',
+      type: 'others',
       label: 'Others',
       hoverClass: 'hover:text-orange-500 hover:bg-orange-400/5',
       activeClass: 'text-orange-500 bg-orange-400/10 scale-x-130 font-medium border-t-1',

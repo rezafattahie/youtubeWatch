@@ -12,27 +12,50 @@
         (click)="drawer.open(); selectedFormField = searchFormFields"
         class="w-5 text-slate-400 hover:text-slate-200 cursor-pointer"
       ></app-icon>
+      @if(subGroups.length > 1) {
+
+      <app-icon
+        (click)="drawer.open(); selectedFormField = []"
+        name="filter"
+        class="w-5 text-slate-400 hover:text-slate-200 cursor-pointer"
+      ></app-icon>
+      }
       <app-drawer-form
         #drawer
-        [btnText]="selectedFormField == searchFormFields ? 'Find' : 'Save'"
+        [btnText]="
+          selectedFormField.length == 0
+            ? ''
+            : selectedFormField == searchFormFields
+            ? 'Find'
+            : 'Save'
+        "
         [fields]="selectedFormField"
         (formSubmit)="handleFormSubmit($event)"
-      ></app-drawer-form>
+      >
+        @if(selectedFormField. length == 0) { @for (subGroup of subGroups; track $index) {
+        <a
+          (click)="onSelectSubGroup(subGroup); drawer.close()"
+          class="border-2 cursor-pointer border-gray-100/10 justify-between hover:scale-100 scale-95 py-1 px-4 transaction-all rounded-lg duration-200 hover:bg-slate-500 bg-slate-500/60"
+          >{{ subGroup }}
+        </a>
+        } }
+      </app-drawer-form>
     </div>
 
     <!-- link list -->
     <ul class="p-2 w-full h-[calc(100vh-133px)] overflow-y-auto">
       @if (videoLinks().length == 0) {
-      <div class="text-center m-10 ">
+      <div class="text-center m-10">
         <app-icon
           name="spin"
           class="w-30 text-center text-lime-600 animate-[spin_2s_ease-out_infinite]"
-        ></app-icon
-        ><p class="text-xs">Getting {{ activeType() }} list...</p>
+        ></app-icon>
+        <p class="text-xs">Getting {{ activeType() }} list...</p>
       </div>
 
-      }@else { @for (link of videoLinks(); track $index) {
+      }@else { @for (link of filteredVideoLinks; track $index) {
       <li
+        [routerLink]="link.group"
         class="flex flex-col items-between border-2 border-gray-100/10 justify-between hover:scale-100 scale-95 px-2 pt-2 transaction-all rounded-lg duration-200 hover:bg-slate-500 bg-slate-500/60 mb-1"
       >
         <a

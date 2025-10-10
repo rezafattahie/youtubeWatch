@@ -18,10 +18,10 @@
   <app-links [activeType]="activeType" (selectedVideo)="onGetvideo($event)"></app-links>
   <div
     [ngClass]="
-      selectedVideo.address == '' ? 'w-full flex flex-row items-center justify-center' : ''
+      selectedVideo.youtubeId == '' ? 'w-full flex flex-row items-center justify-center' : ''
     "
   >
-    @if (selectedVideo.address == '') {
+    @if (selectedVideo.youtubeId == '') {
     <app-icon name="youtube" class="text-slate-700/70 w-120 2xl:w-200 opacity-70"></app-icon>} @else
     {
     <app-player

@@ -3,8 +3,9 @@ import { Groups } from './group.model';
 
 export interface ILink extends IBase {
   title: string;
-  address: string;
+  youtubeId: string;
   subtitle: string;
-  sentOn:string;
+  sentOn: string;
   group: Groups;
+  subGroup?: string;
 }

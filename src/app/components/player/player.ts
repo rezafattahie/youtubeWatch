@@ -24,9 +24,9 @@ export class Player implements OnInit {
 
   selectedVideo = input<ILink>({
     title: '',
-    address: '',
+    youtubeId: '',
     __class: '',
-    group: 'EasyGerman',
+    group: 'easygerman',
     objectId: '',
     ownerId: 0,
     subtitle: '',
@@ -52,7 +52,7 @@ export class Player implements OnInit {
 
     // reaction to change selectedVideo
     effect(() => {
-      const address = this.selectedVideo().address;
+      const address = this.selectedVideo().youtubeId;
       if (address) {
         this.setVideoAddress();
       }
@@ -62,9 +62,9 @@ export class Player implements OnInit {
   ngOnInit(): void {}
 
   setVideoAddress() {
-    const videoId = this.extractVideoId(this.selectedVideo().address);
+    const videoId = this.selectedVideo().youtubeId;
     if (!videoId) {
-      console.error('Invalid YouTube link:', this.selectedVideo().address);
+      console.error('Invalid YouTube link:', this.selectedVideo().youtubeId);
       return;
     }
 
@@ -82,12 +82,7 @@ export class Player implements OnInit {
     }
   }
 
-  //get videoId from youtube URL
-  extractVideoId(url: string): string | null {
-    const regExp = /^.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]{11}).*/;
-    const match = url.match(regExp);
-    return match ? match[1] : null;
-  }
+
 
   onPlayerStateChange(event: any) {
     if (event.data === YT.PlayerState.PLAYING) {

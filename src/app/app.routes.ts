@@ -7,12 +7,12 @@ export const routes: Routes = [
     path: '',
     component: Player,
     children: [
-      { path: '', redirectTo: 'EasyGerman', pathMatch: 'full' },
-      { path: 'EasyGerman', component: Player },
-      { path: 'News', component: Player },
-      { path: 'Films', component: Player },
-      { path: 'Grammars', component: Player },
-      { path: 'Others', component: Player },
+      { path: '', redirectTo: 'easygerman', pathMatch: 'full' },
+      { path: 'easygerman', component: Player },
+      { path: 'news', component: Player },
+      { path: 'films', component: Player },
+      { path: 'grammars', component: Player },
+      { path: 'others', component: Player },
 
     ],
   },

@@ -1,1 +1,1 @@
-export type Groups = 'EasyGerman' | 'Films' | 'Others' | 'Grammars' | 'News'
+export type Groups = 'easygerman' | 'films' | 'others' | 'grammars' | 'news'

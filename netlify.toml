@@ -1,7 +1,3 @@
-[build]
-  command = "ng build --configuration production --base-href /worthafen/ --deploy-url /worthafen/"
-  publish = "dist/worthafen/browser"
-
 [functions]
   directory = "netlify/functions"
 
@@ -9,13 +5,3 @@
   from = "/api/*"
   to = "/.netlify/functions/proxy"
   status = 200
-
-[[redirects]]
-  from = "/worthafen/*"
-  to = "/worthafen/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/"
-  to = "/worthafen/"
-  status = 301
