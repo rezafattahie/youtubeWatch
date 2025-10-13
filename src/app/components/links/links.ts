@@ -1,32 +1,49 @@
-import { Component, effect, EventEmitter, inject, input, Output } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  EventEmitter,
+  inject,
+  input,
+  Output,
+  signal,
+} from '@angular/core';
 import { Icon } from '../icon/icon';
 import { Groups } from '../../models/group.model';
 import { _videoLinks, videoLinks } from '../../signalStorage/videoLinks.signal';
 import { LinksService } from '../../services/links-service';
 import { ILink } from '../../models/link.model';
 import { DatePipe, NgClass } from '@angular/common';
-import { DrawerForm } from '../drawer-form/drawer-form';
 import { IForm } from '../../models/forms.model';
 import { Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { MoveTo } from './move-to/move-to';
+import { DrawerForm } from '../drawer-form/drawer-form';
 
 @Component({
   selector: 'app-links',
-  imports: [Icon, DrawerForm, DatePipe, NgClass, RouterLink],
+  imports: [Icon, DrawerForm, DatePipe, NgClass, RouterLink, MoveTo],
   templateUrl: './links.html',
   styleUrl: './links.scss',
 })
 export class Links {
   private linkService = inject(LinksService);
   @Output() selectedVideo: EventEmitter<ILink> = new EventEmitter();
+  moveTo = signal<{ group: string; subGroup?: string }>({ group: '', subGroup: '' });
+  activeLinkId = signal<string>('');
   activeType = input<Groups>('easygerman');
-  selectedFormField: IForm[] = [];
-  selectedSubGroup = '';
+  groups = input<{ group: string; subGroups: string[] }[]>([]);
+  selectedFormField: { source: string; fields: IForm[] } = { source: '', fields: [] };
+  selectedSubGroup = signal<string>('');
   videoLinks = videoLinks;
-  filteredVideoLinks: ILink[] = [];
-  subGroups: string[] = [];
+  filteredVideoLinks = computed(() => {
+    const subGroup = this.selectedSubGroup();
+    if (!subGroup) return videoLinks();
+    return videoLinks().filter((link) => link.subGroup === subGroup);
+  });
   newLinkFormfields: IForm[] = [];
   searchFormFields: IForm[] = [];
+  openGroups = new Set<string>();
 
   constructor() {
     effect(() => {
@@ -37,7 +54,8 @@ export class Links {
 
   getLinks() {
     _videoLinks.set([]);
-    this.subGroups = [];
+    this.onSelectSubGroup('');
+    this.selectedFormField.fields = [];
     const params = {
       pageSize: 100,
       offset: 0,
@@ -47,13 +65,7 @@ export class Links {
     this.linkService.getLinks(params).subscribe({
       next: (result) => {
         if (result) {
-          result.forEach((res) => {
-            if (res.subGroup && !this.subGroups.includes(res.subGroup)) {
-              this.subGroups.push(res.subGroup);
-            }
-          });
           _videoLinks.set(result);
-          this.filteredVideoLinks = [...videoLinks()];
         }
       },
     });
@@ -64,7 +76,7 @@ export class Links {
   }
 
   handleFormSubmit(data: any) {
-    if (this.selectedFormField === this.newLinkFormfields) {
+    if (this.selectedFormField.fields === this.newLinkFormfields) {
       const body: ILink = {
         title: data.title,
         group: this.activeType(),
@@ -82,21 +94,18 @@ export class Links {
       });
     }
   }
-  //get videoId from youtube URL
-  extractVideoId(url: string): string | null {
-    const regExp = /^.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]{11}).*/;
-    const match = url.match(regExp);
-    return match ? match[1] : null;
-  }
 
   setDrawerFields() {
     this.searchFormFields = [];
-    this.selectedFormField = [];
+    this.newLinkFormfields = [];
+    this.selectedFormField.fields = [];
     this.searchFormFields = [
       {
         name: 'search',
-        label: 'Search name, address or date',
+        label: '',
         type: 'text',
+        placeholder: 'Search title, url or date...',
+        iconConfig: { name: 'search', class: 'w-5 text-gray-400' },
         validators: [Validators.required],
       },
     ];
@@ -133,6 +142,7 @@ export class Links {
         label: this.activeType() === 'films' ? 'Select serie' : 'Select level',
         type: 'select',
         hidden: this.activeType() === 'films' || this.activeType() === 'grammars' ? false : true,
+        validators: [Validators.required],
         options:
           this.activeType() === 'films'
             ? [
@@ -163,14 +173,39 @@ export class Links {
   }
 
   onSelectSubGroup(subGroup: string) {
-    this.selectedSubGroup = subGroup;
-    if (subGroup === '') {
-      this.filteredVideoLinks = [...this.videoLinks()];
-    } else {
-      this.filteredVideoLinks = this.videoLinks().filter((video) => video.subGroup === subGroup);
-    }
+    this.selectedSubGroup.set(subGroup);
   }
+
+  onLinkMoveTo(moveTo: { group: string; subGroup: string }, linkeId: string) {
+    this.moveTo.set(moveTo);
+  }
+  onMoveIconClick(linkId: string) {
+    this.openGroups.clear();
+    this.activeLinkId.set(linkId);
+    this.selectedFormField.source = 'moveto';
+    this.selectedFormField.fields = [];
+  }
+
   onDrawerClosed() {
     console.log('DrawerClosed');
+  }
+
+  //get videoId from youtube URL
+  extractVideoId(url: string): string | null {
+    const regExp = /^.*(?:youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]{11}).*/;
+    const match = url.match(regExp);
+    return match ? match[1] : null;
+  }
+
+  toggleGroup(groupName: string) {
+    if (this.openGroups.has(groupName)) {
+      this.openGroups.delete(groupName);
+    } else {
+      this.openGroups.add(groupName);
+    }
+  }
+
+  isGroupOpen(groupName: string): boolean {
+    return this.openGroups.has(groupName);
   }
 }

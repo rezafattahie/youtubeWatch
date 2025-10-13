@@ -15,7 +15,7 @@
 
 <!-- Tab content -->
 <div class="flex relative h-full w-full delay-200">
-  <app-links [activeType]="activeType" (selectedVideo)="onGetvideo($event)"></app-links>
+  <app-links [activeType]="activeType" [groups]="groups" (selectedVideo)="onGetvideo($event)"></app-links>
   <div
     [ngClass]="
       selectedVideo.youtubeId == '' ? 'w-full flex flex-row items-center justify-center' : ''

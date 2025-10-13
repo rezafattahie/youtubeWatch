@@ -5,13 +5,13 @@
 
 <!-- Drawer -->
 <div
-  class="absolute right-0 mt-6 bottom-auto h-auto overflow-y-auto max-h-screen 2xl:max-h-200 w-74 mx-3 bg-sky-50 text-slate-700 shadow-2xl rounded-xl z-50 transition-all duration-200 ease-in-out"
+  class="absolute right-0 -mt-6 bottom-auto h-auto overflow-y-auto max-h-screen 2xl:max-h-200 w-74 mx-3 bg-sky-50 text-slate-700 shadow-2xl rounded-xl z-50 transition-all duration-200 ease-in-out"
   [class]="isOpen() ? 'top-auto' : '-translate-y-full -top-20'"
 >
   <div class="p-4 flex flex-col h-full">
+    @if(title()) {
     <h2 class="text-lg font-semibold mb-3">{{ title() }}</h2>
-
-    @if (form() && fields().length > 0) {
+    } @if (form() && fields().length > 0) {
     <form [formGroup]="form()!" class="flex flex-col gap-3 flex-1 overflow-auto px-1">
       <!-- Generate inputs -->
       @for (field of fields(); track field.name) { @switch (field.type) {
@@ -22,14 +22,18 @@
         <label class="text-xs ml-2" [ngClass]="field.disabled ? 'text-gray-500' : ''">{{
           field.label
         }}</label>
-        <input
-          type="text"
-          [formControlName]="field.name"
-          [mask]="field.mask"
-          [placeholder]="field.placeholder || ''"
-          [ngClass]="field.disabled ? 'text-gray-500 bg-gray-100 cursor-not-allowed' : ''"
-          class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
-        />
+        <div class="flex items-center gap-1">
+          @if (field.iconConfig) {
+          <app-icon [name]="field.iconConfig.name" [class]="field.iconConfig.class"></app-icon>}
+          <input
+            type="text"
+            [formControlName]="field.name"
+            [mask]="field.mask"
+            [placeholder]="field.placeholder || ''"
+            [ngClass]="field.disabled ? 'text-gray-500 bg-gray-100 cursor-not-allowed' : ''"
+            class="w-full placeholder-gray-400 border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
       </div>
       }
 
@@ -43,7 +47,7 @@
           type="email"
           [formControlName]="field.name"
           [ngClass]="field.disabled ? 'text-gray-500 bg-gray-100 cursor-not-allowed' : ''"
-          class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+          class="w-full placeholder-gray-400 border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
         />
       </div>
       }
@@ -57,7 +61,7 @@
         <select
           [formControlName]="field.name"
           [ngClass]="field.disabled ? 'text-gray-500 bg-gray-100 cursor-not-allowed' : ''"
-          class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+          class="w-full placeholder-gray-400 border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
         >
           @for (option of field.options; track $index) {
           <option [value]="option.value" [selected]="option.selected">{{ option.label }}</option>
@@ -91,9 +95,9 @@
       <!-- consolidated error messages -->
       <div class="mt-3">
         @for (field of fields(); track field.name) { @if (form()?.get(field.name)?.touched &&
-        form()?.get(field.name)?.invalid) {
+        form()?.get(field.name)?.invalid) { @if(field.label) {
         <p class="text-sky-700 text-xs">&bullet; Check the value of "{{ field.label }}"</p>
-        } }
+        } } }
       </div>
 
       <!-- buttons -->

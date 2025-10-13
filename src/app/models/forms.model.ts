@@ -11,4 +11,5 @@ export interface IForm {
   value?: any;
   disabled?: boolean;
   hidden?: boolean;
+  iconConfig?: { name: string; class: string };
 }

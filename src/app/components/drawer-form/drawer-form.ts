@@ -3,17 +3,19 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { NgxMaskDirective, provideNgxMask } from 'ngx-mask';
 import { IForm } from '../../models/forms.model';
+import { Icon } from '../icon/icon';
 
 @Component({
   selector: 'app-drawer-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, NgxMaskDirective],
+  imports: [CommonModule, ReactiveFormsModule, NgxMaskDirective, Icon],
   providers: [provideNgxMask({ dropSpecialCharacters: false })],
   templateUrl: './drawer-form.html',
 })
 export class DrawerForm {
   fields = input<IForm[]>([]);
   title = input('');
+  ObjectId = input('');
   btnText = input();
 
   @Output() formSubmit = new EventEmitter<any>();
@@ -45,6 +47,7 @@ export class DrawerForm {
   }
 
   open() {
+    console.log('%csrc\app\components\drawer-form\drawer-form.ts:49 this.fields(', 'color: #f31b75ff;', this.fields());
     this.isOpen.set(true);
   }
 
