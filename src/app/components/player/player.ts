@@ -10,7 +10,12 @@ import {
 } from '@angular/core';
 import { ILink } from '../../models/link.model';
 
-declare var YT: any;
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady: any;
+  }
+}
 
 @Component({
   selector: 'app-player',
@@ -19,12 +24,15 @@ declare var YT: any;
   styleUrls: ['./player.scss'],
 })
 export class Player implements OnInit {
+
   player?: any;
+
   youtubeId: string | null = null;
+
 
   selectedVideo = input<ILink>({
     title: '',
-    youtubeId: '',
+    youtubeId: 'TDRNIkVE4bw',
     __class: '',
     group: 'easygerman',
     objectId: '',
@@ -35,25 +43,25 @@ export class Player implements OnInit {
   });
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private cdr: ChangeDetectorRef) {
-    effect(() => {
-      if (isPlatformBrowser(this.platformId)) {
-        if (!document.getElementById('youtube-iframe-api')) {
-          const tag = document.createElement('script');
-          tag.id = 'youtube-iframe-api';
-          tag.src = 'https://www.youtube.com/iframe_api';
-          document.body.appendChild(tag);
-        }
-
-        (window as any).onYouTubeIframeAPIReady = () => {
-          this.setVideoAddress();
-        };
+    // بارگذاری API یوتیوب در مرورگر
+    if (isPlatformBrowser(this.platformId)) {
+      if (!document.getElementById('youtube-iframe-api')) {
+        const tag = document.createElement('script');
+        tag.id = 'youtube-iframe-api';
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.body.appendChild(tag);
       }
-    });
 
-    // reaction to change selectedVideo
+      // وقتی API آماده شد
+      (window as any).onYouTubeIframeAPIReady = () => {
+        this.setVideoAddress();
+      };
+    }
+
+    // هر وقت ویدیو تغییر کرد
     effect(() => {
       const address = this.selectedVideo().youtubeId;
-      if (address) {
+      if (address && isPlatformBrowser(this.platformId)) {
         this.setVideoAddress();
       }
     });
@@ -64,31 +72,55 @@ export class Player implements OnInit {
   setVideoAddress() {
     const videoId = this.selectedVideo().youtubeId;
     if (!videoId) {
-      console.error('Invalid YouTube link:', this.selectedVideo().youtubeId);
+      console.error('❌ Invalid YouTube link:', this.selectedVideo().youtubeId);
       return;
     }
 
     this.youtubeId = videoId;
 
-    if (this.player) {
-      this.player.loadVideoById(videoId);
-    } else {
-      this.player = new YT.Player('yt-player', {
-        videoId: videoId,
-        events: {
-          onStateChange: this.onPlayerStateChange.bind(this),
-        },
-      });
+    // اگه پلیر وجود داره، فقط ویدیو جدید رو بارگذاری کن
+    if (this.player && window.YT) {
+      this.player.loadVideoById(this.youtubeId);
+      return;
     }
+
+    // صبر کن تا API واقعاً لود بشه
+    const checkYT = setInterval(() => {
+      if (window.YT && window.YT.Player) {
+        clearInterval(checkYT);
+        this.player = new window.YT.Player('yt-player', {
+          videoId: this.youtubeId,
+          events: {
+            onReady: (event: any) => {
+              console.log('✅ YouTube Player Ready');
+              event.target.playVideo();
+            },
+            onStateChange: this.onPlayerStateChange.bind(this),
+          },
+        });
+      }
+    }, 300);
   }
-
-
 
   onPlayerStateChange(event: any) {
-    if (event.data === YT.PlayerState.PLAYING) {
-      // this.onStartVideo();
-    } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-      // this.onStopVideo();
+    if (event.data === window.YT.PlayerState.PLAYING) {
+      this.onStartVideo();
+    } else if (event.data === window.YT.PlayerState.ENDED) {
+      this.onStopVideo();
     }
   }
+
+onStartVideo() {
+  if (this.player && typeof this.player.playVideo === 'function') {
+    this.player.playVideo();
+  } else {
+    console.warn('⚠️ YouTube player not ready yet');
+  }
+}
+
+  onStopVideo() {
+    // this.player.stopVideo();
+  }
+
+
 }

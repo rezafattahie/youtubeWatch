@@ -1,5 +1,35 @@
-<div
-  class="w-[calc(100vw-558px)] fixed bottom-3 right-58 font-medium text-2xl bg-slate-200 mx-auto text-center p-3"
->
-  Subtitle comes here Subtitle comes here Subtitle comes here ...
+<div class="fixed bottom-3 flex flex-col items-center text-center w-[calc(100vw-560px)] mx-2">
+  <app-drawer-form
+    [class.opacity-0]="!drawer.isOpen()"
+    class="transition-opacity duration-130"
+    #drawer
+  >
+    <div class="flex items-center justify-between">
+      <p class="font-bold text-lg text-left">{{ selectedWord.word }}</p>
+      <app-icon
+        (click)="onSendSelectedWord()"
+        name="wortHafen"
+        class="w-7 text-sky-400 cursor-pointer hover:text-sky-600"
+      ></app-icon>
+    </div>
+
+    <p dir="rtl" class="text-right text-md">
+      {{ translation }}
+    </p> </app-drawer-form
+  >@for (line of lines(); track $index) {
+  <div
+    class="font-medium flex items-center flex-wrap justify-satrt text-xl 2xl:text-3xl bg-slate-950/30 text-slate-950 mx-auto text-center p-3"
+  >
+    @for (word of line.words; track $index) {
+    <p
+      class="hover:bg-lime-100/80 hover:text-lime-900 rounded-lg p-1 cursor-pointer transition-all duration-200"
+      (click)="
+        onSelectWord({ word: word, line, target: !$event.ctrlKey ? 'translate' : 'wordbook' })
+      "
+    >
+      {{ word.trim() }}
+    </p>
+    }
+  </div>
+  }
 </div>

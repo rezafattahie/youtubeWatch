@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit, signal, ViewChild } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ITabInfo } from '../../models/tabInfo.model';
@@ -6,14 +6,14 @@ import { Links } from '../links/links';
 import { Groups } from '../../models/group.model';
 import { ILink } from '../../models/link.model';
 import { Player } from '../player/player';
-import { Subtitle } from '../subtitle/subtitle';
 import { Wordbook } from '../wordbook/wordbook';
 import { Icon } from '../icon/icon';
 import { TabsService } from '../../services/tabs-service';
+import { Subtitle } from '../subtitle/subtitle';
 
 @Component({
   selector: 'app-tabs',
-  imports: [NgClass, RouterModule, Links, Player, Subtitle, Wordbook, Icon],
+  imports: [NgClass, RouterModule, Links, Player, Wordbook, Icon, Subtitle],
   templateUrl: './tabs.html',
   styleUrl: './tabs.scss',
 })
@@ -23,6 +23,11 @@ export class Tabs implements OnInit {
   groups: { group: string; subGroups: string[] }[] = [];
   @Input() activeType!: Groups;
   addeword = false;
+  newWordToHafen: { word: string; meaning: string; line: string } = {
+    word: '',
+    line: '',
+    meaning: '',
+  };
   selectedVideo: ILink = {
     title: '',
     youtubeId: '',
@@ -58,5 +63,9 @@ export class Tabs implements OnInit {
 
   onGetvideo(event: ILink) {
     this.selectedVideo = event;
+  }
+
+  onSendToHafen(recivedWord: { word: string; meaning: string; line: string }) {
+    this.newWordToHafen = recivedWord;
   }
 }
