@@ -118,7 +118,9 @@
         <p class="text-xs">Getting {{ activeType() }} list...</p>
       </div>
 
-      }@else { @for (link of filteredVideoLinks(); track $index) {
+      }@else { @if(selectedSubGroup()) {
+      <li class="rounded-2xl text-md text-blue-800 text-center py-3 bg-blue-300 mb-3">{{ selectedSubGroup() }}</li>
+      } @for (link of filteredVideoLinks(); track $index) {
       <li
         [routerLink]="link.group"
         class="flex flex-col items-between border-2 border-gray-100/10 justify-between hover:scale-100 scale-95 px-2 pt-2 transaction-all rounded-lg duration-200 hover:bg-slate-500 bg-slate-500/60 mb-1"

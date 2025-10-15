@@ -22,11 +22,11 @@ export class Wordbook {
         // prevent to add duplicated word
         const exists = this.wordList().some((w) => w.word === newWord.word);
         if (!exists) {
-          this.wordList.update((list) => [...list, newWord]);
+          this.wordList.update((list) => [newWord, ...list]);  // [ ...list, newWord] => if you want the word add to the end of list
           this.isAnimating.set(true);
           setTimeout(() => {
             this.isAnimating.set(false);
-          }, 300);
+          }, 100);
         }
       }
     });

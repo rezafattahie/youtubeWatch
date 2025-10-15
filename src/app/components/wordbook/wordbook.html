@@ -10,7 +10,7 @@
       (click)="showHafen = !showHafen"
       name="wortHafen"
       class="w-10 cursor-pointer hover:text-blue-700 transaction-all duration-200"
-      [ngClass]="{ 'text-rose-600': isAnimating(), 'text-blue-400': !isAnimating() }"
+      [ngClass]="{ 'text-rose-600': isAnimating(), 'text-blue-400': !isAnimating()}"
     ></app-icon>
     @if (showHafen && wordList().length > 1) {
     <app-icon
@@ -22,13 +22,14 @@
   </div>
   @if (showHafen) {
   <ul class="h-[calc(100vh-150px)] overflow-y-auto">
-    @for (word of wordList(); track $index) { @if(word.word !=='') {
+    @for (w of wordList(); track $index) { @if(w.word !=='') {
     <li
-      class="bg-lime-100/30 p-4 mb-1 rounded-lg hover:shadow-lg cursor-default transaction-all duration-100 scale-95 hover:scale-100 hover:bg-lime-100/60"
-    >
-      <p class="font-bold">{{ word.word }}</p>
-      <p dir="rtl">{{ word.meaning }}</p>
-      <p>{{ word.line }}</p>
+      class="bg-lime-100/30 p-4 mb-1 rounded-lg hover:shadow-lg cursor-default transaction-all duration-100 scale-95 hover:scale-100 hover:bg-lime-200"
+      [ngClass]="{ 'bg-lime-200': isAnimating() && w.word === word()?.word}"
+      >
+      <p class="font-bold">{{ w.word }}</p>
+      <p dir="rtl">{{ w.meaning }}</p>
+      <p>{{ w.line }}</p>
     </li>
     } }
   </ul>
