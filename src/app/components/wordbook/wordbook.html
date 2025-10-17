@@ -3,7 +3,7 @@
   [ngClass]="showHafen ? 'h-[calc(100vh-70px)] w-56 text-start' : ''"
 >
   <div
-    class="flex items-center justify-start gap-3 mb-2"
+    class="flex items-center justify-between gap-3 mb-2"
     [ngClass]="showHafen ? 'border-b-3 border-gray-300' : ''"
   >
     <app-icon
@@ -15,8 +15,8 @@
     @if (showHafen && wordList().length > 1) {
     <app-icon
       (click)="showHafen = false"
-      name="excel"
-      class="w-7 cursor-pointer text-green-700 hover:text-green-500"
+      name="share"
+      class="w-7 cursor-pointer text-slate-700 hover:text-slate-500"
     ></app-icon>
     }
   </div>

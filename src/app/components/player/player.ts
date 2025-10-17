@@ -24,11 +24,9 @@ declare global {
   styleUrls: ['./player.scss'],
 })
 export class Player implements OnInit {
-
   player?: any;
 
   youtubeId: string | null = null;
-
 
   selectedVideo = input<ILink>({
     title: '',
@@ -37,8 +35,8 @@ export class Player implements OnInit {
     group: 'easygerman',
     objectId: '',
     ownerId: 0,
-    subtitle: '',
     updated: '',
+    subtitle: [{ subtitle: 'n', start: 0 }],
     sentOn: '',
   });
 
@@ -110,17 +108,7 @@ export class Player implements OnInit {
     }
   }
 
-onStartVideo() {
-  if (this.player && typeof this.player.playVideo === 'function') {
-    this.player.playVideo();
-  } else {
-    console.warn('⚠️ YouTube player not ready yet');
-  }
-}
+  onStartVideo() {}
 
-  onStopVideo() {
-    // this.player.stopVideo();
-  }
-
-
+  onStopVideo() {}
 }

@@ -35,9 +35,9 @@ export class Tabs implements OnInit {
     group: 'easygerman',
     objectId: '',
     ownerId: 0,
-    subtitle: '',
     updated: '',
     sentOn: '',
+    subtitle:[{ subtitle: '', start: 0}]
   };
 
   ngOnInit(): void {

@@ -13,21 +13,24 @@ import { Groups } from '../../models/group.model';
 import { _videoLinks, videoLinks } from '../../signalStorage/videoLinks.signal';
 import { LinksService } from '../../services/links-service';
 import { ILink } from '../../models/link.model';
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { IForm } from '../../models/forms.model';
 import { Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MoveTo } from './move-to/move-to';
 import { DrawerForm } from '../drawer-form/drawer-form';
+import { SubtitleService } from '../../services/subtitle-service';
+import { concatMap, map } from 'rxjs';
 
 @Component({
   selector: 'app-links',
-  imports: [Icon, DrawerForm, DatePipe, NgClass, RouterLink, MoveTo],
+  imports: [Icon, DrawerForm, DatePipe, RouterLink, MoveTo],
   templateUrl: './links.html',
   styleUrl: './links.scss',
 })
 export class Links {
   private linkService = inject(LinksService);
+  private subtitleService = inject(SubtitleService);
   @Output() selectedVideo: EventEmitter<ILink> = new EventEmitter();
   moveTo = signal<{ group: string; subGroup?: string }>({ group: '', subGroup: '' });
   activeLinkId = signal<string>('');
@@ -83,15 +86,22 @@ export class Links {
         youtubeId: this.extractVideoId(data.youtubeId) ?? '',
         sentOn: data.sentOn,
         subGroup: data.subGroup ?? null,
-        subtitle: data.hasSubtitle,
+        subtitle: [{ subtitle: '', start: 0 }],
       };
 
-      this.linkService.addLinks(body).subscribe({
-        next: (res) => {
-          _videoLinks.update((current) => [...current, res]);
-        },
-        error: (err) => alert(err?.error?.message || err),
-      });
+      this.subtitleService
+        .getSubtitle(body.youtubeId)
+        .pipe(
+          map((subtitle) => {
+            body.subtitle = subtitle.subtitle;
+            return body;
+          }),
+          concatMap((updatedBody) => this.linkService.addLinks(updatedBody))
+        )
+        .subscribe({
+          next: (res) => _videoLinks.update((current) => [...current, res]),
+          error: (err) => alert(err?.error?.message || err),
+        });
     }
   }
 
@@ -142,7 +152,10 @@ export class Links {
         label: this.activeType() === 'films' ? 'Select serie' : 'Select level',
         type: 'select',
         hidden: this.activeType() === 'films' || this.activeType() === 'grammars' ? false : true,
-        validators: [Validators.required],
+        validators:
+          this.activeType() === 'films' || this.activeType() === 'grammars'
+            ? [Validators.required]
+            : [],
         options:
           this.activeType() === 'films'
             ? [
@@ -161,13 +174,6 @@ export class Links {
                 { label: 'B2.1', value: 'B2.1', selected: true },
                 { label: 'B2.2', value: 'B2.2', selected: false },
               ],
-      },
-      {
-        name: 'hasSubtitle',
-        label: 'Download subtitle',
-        type: 'checkbox',
-        disabled: true,
-        value: false,
       },
     ];
   }

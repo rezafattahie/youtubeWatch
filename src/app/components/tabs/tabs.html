@@ -36,7 +36,10 @@
         id="yt-player"
         class="w-[calc(100vw-560px)] h-[calc(100vh-150px)] my-2 mx-2"
       ></app-player>
-      <app-subtitle (sendToHafen)="onSendToHafen($event)"></app-subtitle>
+      <app-subtitle
+        [subtitle]="selectedVideo.subtitle"
+        (sendToHafen)="onSendToHafen($event)"
+      ></app-subtitle>
     </div>
 
     }

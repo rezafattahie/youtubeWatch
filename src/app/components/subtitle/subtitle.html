@@ -15,21 +15,18 @@
 
     <p dir="rtl" class="text-right text-md">
       {{ translation }}
-    </p> </app-drawer-form
-  >@for (line of lines(); track $index) {
+    </p>
+  </app-drawer-form>
   <div
-    class="font-medium flex items-center flex-wrap justify-satrt text-xl 2xl:text-3xl bg-slate-950/30 text-slate-950 mx-auto text-center p-3"
+    class="font-medium w-full flex items-center justify-center flex-wrap text-xl 2xl:text-3xl bg-slate-950/30 text-slate-950 mx-auto text-center p-3"
   >
-    @for (word of line.words; track $index) {
-    <p
+    @for (word of lines(); track $index) {
+    <span
+      (click)="onSelectWord(word)"
       class="hover:bg-lime-100/80 hover:text-lime-900 rounded-lg p-1 cursor-pointer transition-all duration-200"
-      (click)="
-        onSelectWord({ word: word, line, target: !$event.ctrlKey ? 'translate' : 'wordbook' })
-      "
     >
       {{ word.trim() }}
-    </p>
+    </span>
     }
   </div>
-  }
 </div>
