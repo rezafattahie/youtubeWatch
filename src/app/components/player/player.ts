@@ -9,6 +9,7 @@ import {
   PLATFORM_ID,
 } from '@angular/core';
 import { ILink } from '../../models/link.model';
+import { PlayerStore } from '../../services/player-store';
 
 declare global {
   interface Window {
@@ -25,7 +26,7 @@ declare global {
 })
 export class Player implements OnInit {
   player?: any;
-
+  private intervalId?: any;
   youtubeId: string | null = null;
 
   selectedVideo = input<ILink>({
@@ -40,8 +41,22 @@ export class Player implements OnInit {
     sentOn: '',
   });
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object, private cdr: ChangeDetectorRef) {
-    // بارگذاری API یوتیوب در مرورگر
+  constructor(
+    @Inject(PLATFORM_ID)
+    private platformId: Object,
+    private playerStore: PlayerStore
+  ) {
+    effect(() => {
+      const shouldPause = this.playerStore.shouldPause();
+      if (!this.player || typeof this.player.pauseVideo !== 'function') return;
+      if (shouldPause) {
+        this.player.pauseVideo();
+      } else {
+        this.player.playVideo();
+      }
+    });
+
+    // set youyube API in Browser
     if (isPlatformBrowser(this.platformId)) {
       if (!document.getElementById('youtube-iframe-api')) {
         const tag = document.createElement('script');
@@ -50,13 +65,13 @@ export class Player implements OnInit {
         document.body.appendChild(tag);
       }
 
-      // وقتی API آماده شد
+      // when API has got redy
       (window as any).onYouTubeIframeAPIReady = () => {
         this.setVideoAddress();
       };
     }
 
-    // هر وقت ویدیو تغییر کرد
+    // when video changed
     effect(() => {
       const address = this.selectedVideo().youtubeId;
       if (address && isPlatformBrowser(this.platformId)) {
@@ -76,13 +91,12 @@ export class Player implements OnInit {
 
     this.youtubeId = videoId;
 
-    // اگه پلیر وجود داره، فقط ویدیو جدید رو بارگذاری کن
     if (this.player && window.YT) {
       this.player.loadVideoById(this.youtubeId);
       return;
     }
 
-    // صبر کن تا API واقعاً لود بشه
+    // wait until API completely loaded
     const checkYT = setInterval(() => {
       if (window.YT && window.YT.Player) {
         clearInterval(checkYT);
@@ -105,10 +119,31 @@ export class Player implements OnInit {
       this.onStartVideo();
     } else if (event.data === window.YT.PlayerState.ENDED) {
       this.onStopVideo();
+    } else {
+      this.clearTimer();
+      this.playerStore.isPlaying.set(false);
     }
   }
 
-  onStartVideo() {}
+  onStartVideo() {
+    this.playerStore.isPlaying.set(true);
 
-  onStopVideo() {}
+    this.clearTimer();
+    this.intervalId = setInterval(() => {
+      if (this.player?.getCurrentTime) {
+        this.playerStore.currentTime.set(this.player.getCurrentTime());
+      }
+    }, 300);
+  }
+
+  onStopVideo() {
+    this.clearTimer();
+    this.playerStore.isPlaying.set(false);
+  }
+
+  private clearTimer() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+  }
 }

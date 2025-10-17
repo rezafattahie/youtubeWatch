@@ -23,6 +23,8 @@
     @for (word of lines(); track $index) {
     <span
       (click)="onSelectWord(word)"
+      (mouseenter)="onVideoStart()"
+      (mouseleave)="onVideoPause()"
       class="hover:bg-lime-100/80 hover:text-lime-900 rounded-lg p-1 cursor-pointer transition-all duration-200"
     >
       {{ word.trim() }}
