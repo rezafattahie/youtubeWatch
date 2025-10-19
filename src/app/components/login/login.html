@@ -1,0 +1,74 @@
+<div class="pt-85 h-screen bg-slate-400/50">
+  <div
+    class="fixed text-slate-300 bg-slate-900 shadow-xl/60 rounded-4xl top-[50%] left-[50%] -translate-[50%] w-100 h-100 transition-h duration-800"
+  >
+    <div class="flex flex items-enter justify-start">
+      <a
+        class="w-[50%] transition-all duration-200 text-center font-medium py-5 rounded-tl-4xl cursor-pointer"
+        [ngClass]="
+          loginMode === 'Login'
+            ? 'border-b-1 bg-slate-600 shadow-md/30'
+            : 'bg-slate-700 hover:brightness-120'
+        "
+        (click)="toggleMode('Login')"
+        >Login</a
+      >
+      <a
+        class="w-[50%] transition-all duration-200 text-center font-medium py-5 rounded-tr-4xl cursor-pointer"
+        [ngClass]="
+          loginMode === 'Create'
+            ? 'border-b-1 bg-slate-600 shadow-md/30'
+            : 'bg-slate-700 hover:brightness-120'
+        "
+        (click)="toggleMode('Create')"
+        >Create account</a
+      >
+    </div>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmitForm()">
+      <div>
+        <div class="flex flex-col justify-between items-center mt-10">
+          <label class="text-left ml-10 w-[70%]" for="username">User name</label>
+          <input
+            id="username"
+            formControlName="username"
+            class="bg-slate-300 w-[70%] text-xl text-slate-800 px-5 py-2 rounded-full"
+            type="text"
+            name="username"
+          />
+        </div>
+        @if (loginMode == 'Login') {
+        <div class="ml-20 mt-2 flex items-center">
+          <input
+            id="stayLogin"
+            formControlName="stayLogin"
+            class="bg-slate-300 text-xl text-slate-800 py-2 rounded-full"
+            type="checkbox"
+            name="stayLogin"
+            [checked]="true"
+          />
+          <label class="text-left ml-3 text-sm" for="stayLogin">Keep me Loggedin</label>
+        </div>
+        } @if(loginMode === 'Create') {
+        <div class="flex flex-col justify-center items-center mt-5">
+          <label class="text-left ml-10 w-[70%]" for="email">E-mail (optional)</label>
+          <input
+            id="email"
+            formControlName="email"
+            class="bg-slate-300 w-[70%] text-xl text-slate-800 px-5 py-2 rounded-full"
+            type="text"
+            name="email"
+          />
+        </div>
+        }
+      </div>
+
+      <div class="w-full flex flex-col items-center px-3 justify-center fixed bottom-10">
+        <button
+          class="font-bold bg-amber-600 rounded-full hover:shadow-md/30 w-40 cursor-pointer hover:bg-amber-500 px-6 py-3 transition-all duration-200"
+        >
+          {{ loginMode }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

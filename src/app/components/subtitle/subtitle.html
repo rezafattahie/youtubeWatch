@@ -1,5 +1,6 @@
 <div class="fixed bottom-3 flex flex-col items-center text-center w-[calc(100vw-560px)] mx-2">
   <app-drawer-form
+    [source]="'translate'"
     [class.opacity-0]="!drawer.isOpen()"
     class="transition-opacity duration-130"
     #drawer
@@ -20,11 +21,11 @@
   <div
     class="font-medium w-full flex items-center justify-center flex-wrap text-xl 2xl:text-3xl bg-slate-950/30 text-slate-950 mx-auto text-center p-3"
   >
-    @for (word of lines(); track $index) {
+    @for (word of currentLine(); track $index) {
     <span
       (click)="onSelectWord(word)"
-      (mouseenter)="onVideoStart()"
-      (mouseleave)="onVideoPause()"
+      (mouseenter)="onVideoPause()"
+      (mouseleave)="!drawer.isOpen() && onVideoStart()"
       class="hover:bg-lime-100/80 hover:text-lime-900 rounded-lg p-1 cursor-pointer transition-all duration-200"
     >
       {{ word.trim() }}

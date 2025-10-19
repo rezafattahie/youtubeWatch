@@ -1,16 +1,20 @@
-import { Component, EventEmitter, Output, signal } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Output, signal } from '@angular/core';
 import { Tabs } from './components/tabs/tabs';
 import { ITabInfo } from './models/tabInfo.model';
 import { Groups } from './models/group.model';
+import { RouterModule } from '@angular/router';
+import { LoginService } from './services/login-service';
 
 @Component({
   selector: 'app-root',
-  imports: [Tabs],
+  imports: [Tabs, RouterModule],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App {
   protected readonly title = signal('Wort Hafen');
+  loginService = inject(LoginService);
+  currentMember = computed(() => this.loginService.loggedinMember());
   type: Groups = 'easygerman';
   @Output() toggleTransaction?: EventEmitter<void> = new EventEmitter();
 

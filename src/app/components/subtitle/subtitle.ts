@@ -16,65 +16,65 @@ export class Subtitle {
   translateService = inject(TranslateService);
   @ViewChild('drawer') drawer!: DrawerForm;
   subtitle = input<{ subtitle: string; start: number }[]>();
-  sendToHafen = output<{ word: string; meaning: string; line: string }>();
+  sendToWordbook = output<{ word: string; meaning: string; line: string }>();
   player: any;
-  selectedWord: { word: string; line: string[] } = {
-    word: '',
-    line: [],
-  };
+  selectedWord: { word: string; line: string } = { word: '', line: '' };
   translation: string = '-';
-  lines = signal<string[]>([]);
+  currentLine = signal<string[]>([]);
 
   constructor(private playerStore: PlayerStore) {
     effect(() => {
-      this.lines.set([]);
+      this.currentLine.set([]);
       this.lineMaker();
     });
   }
-
   onSelectWord(word: string) {
-    this.selectedWord = { word: word, line: this.lines() };
-    this.translateService.getTranslation(word).subscribe({
+    const pureWord = word.replace(/^[^0-9\p{L}]+|[^0-9\p{L}]+$/gu, '');
+    this.selectedWord = {
+      word: pureWord,
+      line: this.currentLine().join(' '),
+    };
+    this.translateService.getTranslation(pureWord).subscribe({
       next: (res: any) => {
         this.drawer.open();
         if (res) this.translation = res.data.hoverDictEntries.join('، ');
         else this.translation = 'Translation not found';
         this.onVideoPause();
       },
-      error: (err) => {
-        console.log('%csrc\app\components\subtitle\subtitle.ts:45 err', 'color: #ff9100ff;', err);;
-      },
     });
   }
 
   onSendSelectedWord() {
-    const toHafen = {
+    const toWordbook = {
       word: this.selectedWord.word,
       meaning: this.translation,
-      line: this.selectedWord.line.join(' '),
+      line: this.selectedWord.line,
     };
-    localStorage.getItem('Robinson')
+    const exist = localStorage.getItem('Robinson');
+    const data = exist ? JSON.parse(exist) : [];
+    data.push(toWordbook);
+    localStorage.setItem('Robinson', JSON.stringify(data));
     this.drawer.close();
-    this.onVideoStart();
-    this.sendToHafen.emit(toHafen);
+    this.sendToWordbook.emit(toWordbook);
   }
 
   lineMaker() {
     const time = this.playerStore.currentTime();
     const index = this.subtitle()!.findIndex((s, i) => {
-      const nextStart = this.subtitle()![i + 1]?.start ?? Infinity;  // infinity = the Infinite number--->  to keep the last subtitle line to the end of video
+      const nextStart = this.subtitle()![i + 1]?.start ?? Infinity; // infinity = the Infinite number--->  to keep the last subtitle line to the end of video
       return time >= s.start && time < nextStart;
     });
 
     if (index >= 0) {
-      this.lines.set(this.subtitle()![index]!.subtitle.split(' '));
-    } else this.lines.set(['']);
+      this.currentLine.set(this.subtitle()![index]!.subtitle.split(' '));
+    } else this.currentLine.set(['']);
   }
+
   onVideoStart() {
-    this.playerStore.shouldPause.set(true);
+    this.playerStore.shouldPause.set(false);
   }
 
   onVideoPause() {
-    this.playerStore.shouldPause.set(false);
+    this.playerStore.shouldPause.set(true);
   }
 }

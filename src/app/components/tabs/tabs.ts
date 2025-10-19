@@ -23,7 +23,7 @@ export class Tabs implements OnInit {
   groups: { group: string; subGroups: string[] }[] = [];
   @Input() activeType!: Groups;
   addeword = false;
-  newWordToHafen: { word: string; meaning: string; line: string } = {
+  newWordToWordbook: { word: string; meaning: string; line: string } = {
     word: '',
     line: '',
     meaning: '',
@@ -65,7 +65,7 @@ export class Tabs implements OnInit {
     this.selectedVideo = event;
   }
 
-  onSendToHafen(recivedWord: { word: string; meaning: string; line: string }) {
-    this.newWordToHafen = recivedWord;
+  onSendToWordbook(recivedWord: { word: string; meaning: string; line: string }) {
+    this.newWordToWordbook = recivedWord;
   }
 }

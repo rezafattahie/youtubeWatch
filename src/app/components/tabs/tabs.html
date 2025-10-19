@@ -38,13 +38,13 @@
       ></app-player>
       <app-subtitle
         [subtitle]="selectedVideo.subtitle"
-        (sendToHafen)="onSendToHafen($event)"
+        (sendToWordbook)="onSendToWordbook($event)"
       ></app-subtitle>
     </div>
 
     }
-    <app-wordbook [word]="newWordToHafen"></app-wordbook>
+    <app-wordbook [word]="newWordToWordbook"></app-wordbook>
   </div>
   <!-- <ng-content></ng-content> -->
-  <router-outlet></router-outlet>
+  <!-- <router-outlet></router-outlet> -->
 </div>

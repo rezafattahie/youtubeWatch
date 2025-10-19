@@ -1,7 +1,10 @@
-<!-- Tabs -->
+@if(currentMember()) {
+  <!-- Tabs -->
 <app-tabs
   class="flex flex-col justify-center w-screen min-h-full"
   [tabs]="tabInfos"
   [activeType]="type"
 >
 </app-tabs>
+} 
+<router-outlet></router-outlet>

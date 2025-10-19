@@ -17,6 +17,7 @@ export class DrawerForm {
   title = input('');
   ObjectId = input('');
   btnText = input();
+  source = input<string | null>(null);
 
   @Output() formSubmit = new EventEmitter<any>();
   @Output() closed = new EventEmitter<void>();
@@ -47,7 +48,6 @@ export class DrawerForm {
   }
 
   open() {
-    console.log('%csrc\app\components\drawer-form\drawer-form.ts:49 this.fields(', 'color: #f31b75ff;', this.fields());
     this.isOpen.set(true);
   }
 
