@@ -20,30 +20,42 @@ import { RouterLink } from '@angular/router';
 import { MoveTo } from './move-to/move-to';
 import { DrawerForm } from '../drawer-form/drawer-form';
 import { SubtitleService } from '../../services/subtitle-service';
-import { concatMap, map } from 'rxjs';
+import { catchError, concatMap, map, of } from 'rxjs';
+import { LoginService } from '../../services/login-service';
+import { Update } from './update/update';
+import { GetSub } from './get-sub/get-sub';
 
 @Component({
   selector: 'app-links',
-  imports: [Icon, DrawerForm, DatePipe, RouterLink, MoveTo],
+  imports: [Icon, DrawerForm, DatePipe, RouterLink, MoveTo, Update, GetSub],
   templateUrl: './links.html',
   styleUrl: './links.scss',
 })
 export class Links {
   private linkService = inject(LinksService);
   private subtitleService = inject(SubtitleService);
+  private loginService = inject(LoginService);
+
   @Output() selectedVideo: EventEmitter<ILink> = new EventEmitter();
+  @Output() currentLinkId: EventEmitter<string> = new EventEmitter();
+
   moveTo = signal<{ group: string; subGroup?: string }>({ group: '', subGroup: '' });
   activeLinkId = signal<string>('');
   activeType = input<Groups>('easygerman');
-  groups = input<{ group: string; subGroups: string[] }[]>([]);
+  groups = input<{ group: string; subGroups: string[]; label: string }[]>([]);
   selectedFormField: { source: string; fields: IForm[] } = { source: '', fields: [] };
-  selectedSubGroup = signal<string>('');
-  videoLinks = videoLinks;
+  selectedSubGroup = signal<{ group: Groups; subGroup: string }>({
+    group: 'easygerman',
+    subGroup: '',
+  });
   filteredVideoLinks = computed(() => {
-    const subGroup = this.selectedSubGroup();
-    if (!subGroup) return videoLinks();
+    const group = this.selectedSubGroup().group;
+    const subGroup = this.selectedSubGroup().subGroup;
+    if (!subGroup) return videoLinks().filter((link) => link.group === group);
     return videoLinks().filter((link) => link.subGroup === subGroup);
   });
+
+  videoLinks = videoLinks;
   newLinkFormfields: IForm[] = [];
   searchFormFields: IForm[] = [];
   openGroups = new Set<string>();
@@ -57,12 +69,17 @@ export class Links {
 
   getLinks() {
     _videoLinks.set([]);
-    this.onSelectSubGroup('');
+    this.onSelectSubGroup({ group: this.activeType(), subGroup: '' });
     this.selectedFormField.fields = [];
+
+    const where =
+      this.activeType() !== 'others'
+        ? `group = '${this.activeType()}'`
+        : `group = '${this.activeType()}' and viewer = '${this.loginService.loggedinMember()}' or viewer='all'`;
     const params = {
       pageSize: 100,
       offset: 0,
-      where: `group = '${this.activeType()}'`,
+      where: where,
     };
 
     this.linkService.getLinks(params).subscribe({
@@ -87,20 +104,31 @@ export class Links {
         sentOn: data.sentOn,
         subGroup: data.subGroup ?? null,
         subtitle: [{ subtitle: '', start: 0 }],
+        viewer: '',
       };
 
       this.subtitleService
         .getSubtitle(body.youtubeId)
         .pipe(
           map((subtitle) => {
+            if (this.activeType() === 'others') {
+              body.viewer = this.loginService.loggedinMember();
+            } else {
+              body.viewer = 'all';
+            }
             body.subtitle = subtitle.subtitle;
             return body;
+          }),
+          catchError((error) => {
+            alert('⚠️ Failed to retrieve subtitles. Your link has been added without subtitles.');
+            body.subtitle = [];
+            return of(body);
           }),
           concatMap((updatedBody) => this.linkService.addLinks(updatedBody))
         )
         .subscribe({
           next: (res) => _videoLinks.update((current) => [...current, res]),
-          error: (err) => alert(err?.error?.message || err),
+          error: (err) => alert(err),
         });
     }
   }
@@ -178,22 +206,19 @@ export class Links {
     ];
   }
 
-  onSelectSubGroup(subGroup: string) {
+  onSelectSubGroup(subGroup: { group: Groups; subGroup: string }) {
     this.selectedSubGroup.set(subGroup);
   }
 
   onLinkMoveTo(moveTo: { group: string; subGroup: string }, linkeId: string) {
     this.moveTo.set(moveTo);
   }
+
   onMoveIconClick(linkId: string) {
     this.openGroups.clear();
     this.activeLinkId.set(linkId);
     this.selectedFormField.source = 'moveto';
     this.selectedFormField.fields = [];
-  }
-
-  onDrawerClosed() {
-    console.log('DrawerClosed');
   }
 
   //get videoId from youtube URL
@@ -208,6 +233,13 @@ export class Links {
       this.openGroups.delete(groupName);
     } else {
       this.openGroups.add(groupName);
+    }
+  }
+
+  setActiveLink(linkId: string) {
+    if (linkId) {
+      this.activeLinkId.set(linkId);
+      this.currentLinkId.emit(linkId);
     }
   }
 

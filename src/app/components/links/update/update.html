@@ -1,0 +1,7 @@
+<app-icon
+  (click)="update()"
+  title="Update {{UpdateWhere()}}"
+  name="refresh"
+  class="w-4 text-slate-400 hover:text-slate-700 cursor-pointer"
+  [class]="isSyncing() ? 'animate-[spin_2s_ease-out_infinite]' : ''"
+></app-icon>

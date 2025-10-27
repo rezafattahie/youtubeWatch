@@ -18,18 +18,34 @@
       {{ translation }}
     </p>
   </app-drawer-form>
-  <div
-    class="font-medium w-full flex items-center justify-center flex-wrap text-xl 2xl:text-3xl bg-slate-950/30 text-slate-950 mx-auto text-center p-3"
-  >
-    @for (word of currentLine(); track $index) {
-    <span
-      (click)="onSelectWord(word)"
-      (mouseenter)="onVideoPause()"
-      (mouseleave)="!drawer.isOpen() && onVideoStart()"
-      class="hover:bg-lime-100/80 hover:text-lime-900 rounded-lg p-1 cursor-pointer transition-all duration-200"
+  @if(currentLine().length > 0 ) {
+  <div class="flex justify-center w-full items-center">
+    <div
+      class="font-medium w-full flex items-center justify-center flex-wrap text-xl 2xl:text-3xl bg-slate-950/30 text-slate-950 mx-auto text-center p-3"
+      [ngClass]="!isSubVisible ? 'hidden' : ''"
     >
-      {{ word.trim() }}
-    </span>
-    }
+      @for (word of currentLine(); track $index) {
+      <p
+        (click)="isSubVisible && onSelectWord(word)"
+        (mouseenter)="onVideoPause()"
+        (mouseleave)="!drawer.isOpen() && onVideoStart()"
+        class="hover:bg-lime-100/80 hover:text-lime-900 rounded-lg p-1 transition-all duration-200 cursor-pointer"
+      >
+        {{ word.trim() }}
+      </p>
+
+      }
+    </div>
+    <app-icon
+      (click)="onToggleSubVisible()"
+      name="off"
+      class="w-5 cursor-pointer -ml-6 transition-all duration-200"
+      [ngClass]="
+        isSubVisible
+          ? 'text-rose-700 hover:text-rose-400'
+          : ' text-lime-600 hover:text-lime-400 -mt-15'
+      "
+    ></app-icon>
   </div>
+  }
 </div>

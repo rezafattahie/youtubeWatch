@@ -1,19 +1,22 @@
 <!-- Tab selector -->
-<ul
-  class="flex gap-5 w-screen items-center justify-center text-center text-xs text-lime-100 bg-slate-900/90"
->
-  @for (item of tabs; track $index) {
-  <li (click)="toggleTab(item.type)" [routerLink]="item.type">
-    <a
-      class="inline-block py-4 w-30 transition-all ease-in duration-100 cursor-pointer rounded-b-2xl"
-      [ngClass]="activeType === item.type ? item.activeClass : ''"
-      [class]="item.hoverClass"
-    >
-      {{ item.label }}
-    </a>
-  </li>
-  }
-</ul>
+<div class="flex justify-between bg-slate-900/90">
+  <app-profile></app-profile>
+  <div class="w-[calc(100vw-200px)]">
+    <ul class="flex items-center justify-center gap-5 text-center text-xs text-lime-100">
+      @for (item of tabs(); track $index) {
+      <li (click)="toggleTab(item.type)" [routerLink]="item.type">
+        <a
+          class="inline-block py-4 w-30 transition-all ease-in duration-100 cursor-pointer rounded-b-2xl"
+          [ngClass]="activeType === item.type ? item.activeClass : ''"
+          [class]="item.hoverClass"
+        >
+          {{ item.label }}
+        </a>
+      </li>
+      }
+    </ul>
+  </div>
+</div>
 
 <!-- Tab content -->
 <div class="flex relative h-full w-full delay-200">
@@ -21,6 +24,7 @@
     [activeType]="activeType"
     [groups]="groups"
     (selectedVideo)="onGetvideo($event)"
+    (currentLinkId)="onGetCurrentLink($event)"
   ></app-links>
   <div
     [ngClass]="
@@ -34,17 +38,17 @@
       <app-player
         [selectedVideo]="selectedVideo"
         id="yt-player"
-        class="w-[calc(100vw-560px)] h-[calc(100vh-150px)] my-2 mx-2"
+        class="w-[calc(100vw-560px)] h-[calc(100vh-150px)] my-2 mx-2 z-10"
       ></app-player>
+
       <app-subtitle
-        [subtitle]="selectedVideo.subtitle"
+        class="z-50"
+        [inputLink]="selectedVideo"
         (sendToWordbook)="onSendToWordbook($event)"
       ></app-subtitle>
     </div>
 
     }
-    <app-wordbook [word]="newWordToWordbook"></app-wordbook>
+    <app-wordbook [selectedLinkId]="currentLinkId()" [vocab]="newWordToWordbook"></app-wordbook>
   </div>
-  <!-- <ng-content></ng-content> -->
-  <!-- <router-outlet></router-outlet> -->
 </div>

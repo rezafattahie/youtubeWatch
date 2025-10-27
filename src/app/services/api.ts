@@ -49,20 +49,22 @@ export class ApiService {
       .pipe(catchError((err) => this.handleError(err)));
   }
 
-  put<T>(endpoint: string, body: any) {
+  put<T>(endpoint: string, body: any, params?: any) {
     this.loading.set(true);
     return this.http
       .put<T>(`${this.baseUrl}/${endpoint}`, body, {
         headers: this.getHeaders(),
+        params,
       })
       .pipe(catchError((err) => this.handleError(err)));
   }
 
-  delete<T>(endpoint: string) {
+  delete<T>(endpoint: string, body?: any) {
     this.loading.set(true);
     return this.http
       .delete<T>(`${this.baseUrl}/${endpoint}`, {
         headers: this.getHeaders(),
+        body,
       })
       .pipe(catchError((err) => this.handleError(err)));
   }

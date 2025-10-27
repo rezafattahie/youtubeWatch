@@ -1,3 +1,10 @@
+@if (!loginService.loggedinMember()) {
+<div class="relative top-20">
+  <app-drawer-form #alertMessage>
+    {{ alert()?.text }}
+  </app-drawer-form>
+</div>
+
 <div class="pt-85 h-screen bg-slate-400/50">
   <div
     class="fixed text-slate-300 bg-slate-900 shadow-xl/60 rounded-4xl top-[50%] left-[50%] -translate-[50%] w-100 h-100 transition-h duration-800"
@@ -16,14 +23,15 @@
       <a
         class="w-[50%] transition-all duration-200 text-center font-medium py-5 rounded-tr-4xl cursor-pointer"
         [ngClass]="
-          loginMode === 'Create'
+          loginMode === 'Join'
             ? 'border-b-1 bg-slate-600 shadow-md/30'
             : 'bg-slate-700 hover:brightness-120'
         "
-        (click)="toggleMode('Create')"
-        >Create account</a
+        (click)="toggleMode('Join')"
+        >Join now</a
       >
     </div>
+
     <form [formGroup]="loginForm" (ngSubmit)="onSubmitForm()">
       <div>
         <div class="flex flex-col justify-between items-center mt-10">
@@ -37,7 +45,7 @@
           />
         </div>
         @if (loginMode == 'Login') {
-        <div class="ml-20 mt-2 flex items-center">
+        <div class="ml-15 mt-8 flex items-center">
           <input
             id="stayLogin"
             formControlName="stayLogin"
@@ -46,9 +54,9 @@
             name="stayLogin"
             [checked]="true"
           />
-          <label class="text-left ml-3 text-sm" for="stayLogin">Keep me Loggedin</label>
+          <label class="text-left ml-3 text-sm" for="stayLogin">Keep me signed in.</label>
         </div>
-        } @if(loginMode === 'Create') {
+        } @if(loginMode === 'Join') {
         <div class="flex flex-col justify-center items-center mt-5">
           <label class="text-left ml-10 w-[70%]" for="email">E-mail (optional)</label>
           <input
@@ -72,3 +80,5 @@
     </form>
   </div>
 </div>
+
+}

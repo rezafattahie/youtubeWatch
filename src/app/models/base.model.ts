@@ -1,6 +1,7 @@
 export interface IBase {
   objectId?: string;
-  ownerId?: number;
+  ownerId?: string;
   updated?: string;
+  created?: string;
   __class?: string;
 }

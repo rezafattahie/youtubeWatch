@@ -4,19 +4,27 @@ import { Icon } from '../icon/icon';
 import { SubtitleService } from '../../services/subtitle-service';
 import { TranslateService } from '../../services/translate-service';
 import { PlayerStore } from '../../services/player-store';
+import { NgClass } from '@angular/common';
+import { ILink } from '../../models/link.model';
+import { IVocab } from '../../models/vocabstorage.model';
+import { LoginService } from '../../services/login-service';
+import { VocabStorage } from '../../services/vocab-storage-service';
 
 @Component({
   selector: 'app-subtitle',
-  imports: [DrawerForm, Icon],
+  imports: [DrawerForm, Icon, NgClass],
   templateUrl: './subtitle.html',
   styleUrl: './subtitle.scss',
 })
 export class Subtitle {
   subtitleService = inject(SubtitleService);
   translateService = inject(TranslateService);
+  loginService = inject(LoginService);
+  vocabStorage = inject(VocabStorage);
   @ViewChild('drawer') drawer!: DrawerForm;
-  subtitle = input<{ subtitle: string; start: number }[]>();
-  sendToWordbook = output<{ word: string; meaning: string; line: string }>();
+  inputLink = input.required<ILink>();
+  isSubVisible = true;
+  sendToWordbook = output<IVocab>();
   player: any;
   selectedWord: { word: string; line: string } = { word: '', line: '' };
   translation: string = '-';
@@ -45,29 +53,37 @@ export class Subtitle {
   }
 
   onSendSelectedWord() {
-    const toWordbook = {
-      word: this.selectedWord.word,
-      meaning: this.translation,
-      line: this.selectedWord.line,
+    const toWordbook: IVocab = {
+      words: [
+        {
+          word: this.selectedWord.word,
+          meaning: this.translation,
+          line: this.selectedWord.line,
+        },
+      ],
+      owner: this.loginService.loggedinMember(),
+      linkId: this.inputLink().objectId ?? '',
     };
-    const exist = localStorage.getItem('Robinson');
-    const data = exist ? JSON.parse(exist) : [];
-    data.push(toWordbook);
-    localStorage.setItem('Robinson', JSON.stringify(data));
-    this.drawer.close();
-    this.sendToWordbook.emit(toWordbook);
+    const params = `where=linkId%3D'${toWordbook.linkId}'`;
+
+    this.vocabStorage.saveVocab(params, toWordbook).subscribe({
+      next: () => {
+        this.sendToWordbook.emit(toWordbook);
+        this.drawer.close();
+      },
+    });
   }
 
   lineMaker() {
     const time = this.playerStore.currentTime();
-    const index = this.subtitle()!.findIndex((s, i) => {
-      const nextStart = this.subtitle()![i + 1]?.start ?? Infinity; // infinity = the Infinite number--->  to keep the last subtitle line to the end of video
+    const index = this.inputLink()!.subtitle.findIndex((s, i) => {
+      const nextStart = this.inputLink()!.subtitle[i + 1]?.start ?? Infinity; // infinity = the Infinite number--->  to keep the last subtitle line to the end of video
       return time >= s.start && time < nextStart;
     });
 
     if (index >= 0) {
-      this.currentLine.set(this.subtitle()![index]!.subtitle.split(' '));
-    } else this.currentLine.set(['']);
+      this.currentLine.set(this.inputLink()!.subtitle[index]!.subtitle.split(' '));
+    } else this.currentLine.set([]);
   }
 
   onVideoStart() {
@@ -76,5 +92,9 @@ export class Subtitle {
 
   onVideoPause() {
     this.playerStore.shouldPause.set(true);
+  }
+
+  onToggleSubVisible() {
+    this.isSubVisible = !this.isSubVisible;
   }
 }

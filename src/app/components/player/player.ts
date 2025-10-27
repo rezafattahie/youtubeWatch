@@ -1,12 +1,5 @@
 import { isPlatformBrowser } from '@angular/common';
-import {
-  Component,
-  effect,
-  Inject,
-  input,
-  OnInit,
-  PLATFORM_ID,
-} from '@angular/core';
+import { Component, effect, Inject, input, OnInit, PLATFORM_ID } from '@angular/core';
 import { ILink } from '../../models/link.model';
 import { PlayerStore } from '../../services/player-store';
 
@@ -27,15 +20,16 @@ export class Player implements OnInit {
   player?: any;
   private intervalId?: any;
   youtubeId: string | null = null;
-
+  private isYTReady = false;
   selectedVideo = input<ILink>({
     title: '',
     youtubeId: 'TDRNIkVE4bw',
     __class: '',
     group: 'easygerman',
     objectId: '',
-    ownerId: 0,
+    ownerId: '',
     updated: '',
+    viewer:'',
     subtitle: [{ subtitle: 'n', start: 0 }],
     sentOn: '',
   });
@@ -46,12 +40,9 @@ export class Player implements OnInit {
     private playerStore: PlayerStore
   ) {
     effect(() => {
-      const shouldPause = this.playerStore.shouldPause();
-      if (!this.player || typeof this.player.pauseVideo !== 'function') return;
-      if (shouldPause) {
-        this.player.pauseVideo();
-      } else {
-        this.player.playVideo();
+      const address = this.selectedVideo().youtubeId;
+      if (address && isPlatformBrowser(this.platformId) && this.isYTReady) {
+        this.setVideoAddress();
       }
     });
 
@@ -63,17 +54,17 @@ export class Player implements OnInit {
         tag.src = 'https://www.youtube.com/iframe_api';
         document.body.appendChild(tag);
       }
-
-      // when API has got redy
-      (window as any).onYouTubeIframeAPIReady = () => {
-        this.setVideoAddress();
-      };
     }
 
-    // when video changed
+    // when API has got redy
+    (window as any).onYouTubeIframeAPIReady = () => {
+      this.isYTReady = true;
+      this.setVideoAddress();
+    };
+
     effect(() => {
       const address = this.selectedVideo().youtubeId;
-      if (address && isPlatformBrowser(this.platformId)) {
+      if (address && isPlatformBrowser(this.platformId) && this.isYTReady) {
         this.setVideoAddress();
       }
     });

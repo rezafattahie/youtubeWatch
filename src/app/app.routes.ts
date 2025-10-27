@@ -14,7 +14,7 @@ export const routes: Routes = [
       { path: 'news', component: Player },
       { path: 'films', component: Player },
       { path: 'grammars', component: Player },
-      { path: 'others', component: Player },
+      { path: ':currentMember', component: Player },
 
     ],
   },

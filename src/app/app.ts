@@ -1,22 +1,30 @@
-import { Component, computed, EventEmitter, inject, Output, signal } from '@angular/core';
+import { Component, computed, EventEmitter, inject, OnInit, Output, signal } from '@angular/core';
 import { Tabs } from './components/tabs/tabs';
 import { ITabInfo } from './models/tabInfo.model';
 import { Groups } from './models/group.model';
 import { RouterModule } from '@angular/router';
 import { LoginService } from './services/login-service';
+import { Alert } from "./components/alert/alert";
 
 @Component({
   selector: 'app-root',
-  imports: [Tabs, RouterModule],
+  imports: [Tabs, RouterModule, Alert],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {
+export class App implements OnInit {
   protected readonly title = signal('Wort Hafen');
   loginService = inject(LoginService);
   currentMember = computed(() => this.loginService.loggedinMember());
   type: Groups = 'easygerman';
   @Output() toggleTransaction?: EventEmitter<void> = new EventEmitter();
+
+  ngOnInit(): void {
+    for (let i = 0; i < localStorage.length; i++) {
+      const keyData = localStorage.getItem(localStorage.key(i)!);
+      if(keyData && JSON.parse(keyData ).stayLogin == true) this.loginService.loggedinMember.set(localStorage.key(i)!)
+    }
+  }
 
   tabInfos: ITabInfo[] = [
     {
@@ -46,9 +54,9 @@ export class App {
     },
     {
       type: 'others',
-      label: 'Others',
+      label: '',
       hoverClass: 'hover:text-orange-500 hover:bg-orange-400/5',
-      activeClass: 'text-orange-500 bg-orange-400/10 scale-x-130 font-medium border-t-1',
+      activeClass: 'text-orange-500 bg-orange-400/10 scale-x-130 font-bold border-t-1',
     },
   ];
 }

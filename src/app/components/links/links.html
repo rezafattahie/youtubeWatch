@@ -40,7 +40,7 @@
             class="w-4 text-slate-700 hover:text-slate-400 cursor-pointer"
           ></app-icon>
           <app-icon
-            (click)="onSelectSubGroup(''); drawer.close()"
+            (click)="onSelectSubGroup({ group: activeType(), subGroup: '' }); drawer.close()"
             name="clearFilter"
             class="w-7 text-slate-700 hover:text-slate-400 cursor-pointer"
           ></app-icon>
@@ -62,7 +62,7 @@
               aria-expanded="{{ isGroupOpen(group.group) ? 'true' : 'false' }}"
             >
               <div class="flex items-center justify-between">
-                <span class="">{{ group.group }} </span>
+                <span class="">{{ group.label }} </span>
 
                 @if (group.subGroups && group.subGroups.length) {
                 <app-icon
@@ -97,7 +97,7 @@
         } @else { @for (group of groups(); track $index) { @for (subGroup of group.subGroups; track
         $index) { @if (group.group === activeType()) {
         <a
-          (click)="onSelectSubGroup(subGroup); drawer.close()"
+          (click)="onSelectSubGroup({ group: group.group, subGroup: subGroup }); drawer.close()"
           class="block border-2 cursor-pointer border-gray-100/10 justify-between hover:scale-100 scale-95 py-1 px-4 transaction-all rounded-lg duration-200 hover:bg-slate-500 bg-slate-500/60"
         >
           {{ subGroup }}
@@ -114,17 +114,18 @@
           name="spin"
           class="w-30 text-center text-lime-600 animate-[spin_2s_ease-out_infinite]"
         ></app-icon>
-        <p class="text-xs">Getting {{ activeType() }} list...</p>
       </div>
 
-      }@else { @if(selectedSubGroup()) {
+      }@else { @if(selectedSubGroup().subGroup) {
       <li class="rounded-2xl text-md text-blue-800 text-center py-3 bg-blue-300 mb-3">
-        {{ selectedSubGroup() }}
+        {{ selectedSubGroup().subGroup }}
       </li>
       } @for (link of filteredVideoLinks(); track $index) {
       <li
+        (click)="setActiveLink(link.objectId!)"
         [routerLink]="link.group"
-        class="flex flex-col items-between border-2 border-gray-100/10 justify-between hover:scale-100 scale-95 px-2 pt-2 transaction-all rounded-lg duration-200 hover:bg-slate-500 bg-slate-500/60 mb-1"
+        class="flex flex-col items-between border-2 border-gray-100/10 justify-between hover:scale-100 px-2 pt-2 transaction-all rounded-lg duration-200 hover:bg-slate-500 mb-1"
+        [class]="activeLinkId() === link.objectId ? 'scale-100 bg-slate-500':'scale-95 bg-slate-500/30'"
       >
         <a
           class="flex items-start gap-2 justify-start w-full cursor-pointer hover:text-lime-300 text-lime-200"
@@ -134,15 +135,19 @@
         </a>
         <div class="flex items-center w-full justify-between">
           <p class="text-slate-200/40 text-sm">{{ link.sentOn | date : 'dd. MMMM yyyy' }}</p>
-          <div class="flex items-center">
+          <div class="flex items-center gap-2 mb-4">
+            @if(!link.subtitle || link.subtitle.length == 0) {
+            <app-get-sub [link]="link"></app-get-sub>}
+            <app-update [UpdateWhere]="'title'" [link]="link"></app-update>
             <app-icon
               name="edit"
               class="w-4 text-slate-400 hover:text-slate-700 cursor-pointer"
             ></app-icon>
-            <app-icon
+            <!-- <app-icon
               name="delete"
+              (click)="onDeleteLink(link.objectId!)"
               class="w-7 text-slate-400 hover:text-slate-700 cursor-pointer"
-            ></app-icon>
+            ></app-icon> -->
             <app-move-to
               (click)="drawer.open(); onMoveIconClick(link.objectId!)"
               [linkId]="link.objectId!"

@@ -5,9 +5,9 @@
 
 <!-- Drawer -->
 <div
-  class="absolute right-[50%] mx-auto translate-x-[50%] -mt-6 h-auto overflow-y-auto max-h-screen 2xl:max-h-200 w-74 mx-3 bg-sky-50 text-slate-700 shadow-2xl rounded-xl z-50 transition-all duration-200 ease-in-out"
+  class="absolute right-[50%] mx-auto translate-x-[50%] -mt-6 h-auto overflow-y-auto max-h-screen 2xl:max-h-200 w-74 mx-3 bg-sky-50 text-slate-700 shadow-2xl/30 rounded-xl z-50 transition-all duration-200 ease-in-out"
   [class]="isOpen() ? 'top-auto' : '-translate-y-full -top-20'"
-  [ngClass]="source() === 'translate' ? 'bottom-20': 'bottom-auto'"
+  [ngClass]="source() === 'translate' ? 'bottom-20' : 'bottom-auto'"
 >
   <div class="p-4 flex flex-col h-full">
     @if(title()) {
@@ -34,6 +34,24 @@
             [ngClass]="field.disabled ? 'text-gray-500 bg-gray-100 cursor-not-allowed' : ''"
             class="w-full placeholder-gray-400 border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
           />
+        </div>
+      </div>
+      }
+
+      <!-- textarea -->
+      @case ('textarea') {
+      <div class="flex flex-col" [hidden]="field.hidden">
+        <label class="text-xs ml-2" [ngClass]="field.disabled ? 'text-gray-500' : ''">{{
+          field.label
+        }}</label>
+        <div class="flex items-center gap-1">
+          @if (field.iconConfig) {
+          <app-icon [name]="field.iconConfig.name" [class]="field.iconConfig.class"></app-icon>}
+          <textarea
+            [formControlName]="field.name"
+            [ngClass]="field.disabled ? 'text-gray-500 bg-gray-100 cursor-not-allowed' : ''"
+            class="w-full placeholder-gray-400 border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-blue-500"
+          ></textarea>
         </div>
       </div>
       }

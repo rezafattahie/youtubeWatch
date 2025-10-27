@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class TabsService {
   api = inject(ApiService);
-  getTabs(params?: any): Observable<{ group: string; subGroups: string[] }[]> {
-    return this.api.get<{ group: string; subGroups: string[] }[]>('groups', params);
+  getTabs(params?: any): Observable<{ group: string; subGroups: string[]; label: string }[]> {
+    return this.api.get<{ group: string; subGroups: string[]; label: string }[]>('groups', params);
   }
 }

@@ -2,34 +2,43 @@
   class="fixed top-[48px] right-0 mt-2 p-2 bg-slate-200 m-l-2 w-20 text-center h-14 rounded-l-2xl transaction-all duration-200"
   [ngClass]="showHafen ? 'h-[calc(100vh-70px)] w-56 text-start' : ''"
 >
-  <div
-    class="flex items-center justify-between gap-3 mb-2"
-    [ngClass]="showHafen ? 'border-b-3 border-gray-300' : ''"
-  >
+  <div class="relative top-4 right-25">
+    <app-drawer-form #alertDrawer
+      ><span class="text-sky-800">{{ userAlert().text }}</span></app-drawer-form
+    >
+  </div>
+  <div class="flex items-center justify-between gap-3 px-3">
     <app-icon
       (click)="showHafen = !showHafen"
       name="wortHafen"
       class="w-10 cursor-pointer hover:text-blue-700 transaction-all duration-200"
-      [ngClass]="{ 'text-rose-600': isAnimating(), 'text-blue-400': !isAnimating()}"
+      [ngClass]="{ 'text-rose-600': isAnimating(), 'text-blue-400': !isAnimating() }"
     ></app-icon>
-    @if (showHafen && wordList().length > 1) {
+    @if (showHafen) {
     <app-icon
-      (click)="showHafen = false"
-      name="share"
-      class="w-7 cursor-pointer text-slate-700 hover:text-slate-500"
+      (click)="onSyncMyWords()"
+      name="refresh"
+      class="w-6 transition-all duration-300 cursor-pointer"
+      title="Sync this link's words"
+      [ngClass]="
+        isSyncing()
+          ? 'animate-[spin_2s_ease-out_infinite] text-violet-500 scale-130'
+          : 'text-lime-700 hover:text-lime-500'
+      "
     ></app-icon>
     }
   </div>
   @if (showHafen) {
   <ul class="h-[calc(100vh-150px)] overflow-y-auto">
-    @for (w of wordList(); track $index) { @if(w.word !=='') {
+    @for (w of currentLinkWords(); track $index) {
+       @if(w.word) {
     <li
       class="bg-lime-100/30 p-4 mb-1 rounded-lg hover:shadow-lg cursor-default transaction-all duration-100 scale-95 hover:scale-100 hover:bg-lime-200"
-      [ngClass]="{ 'bg-lime-200': isAnimating() && w.word === word()?.word}"
-      >
+      [ngClass]="{ 'bg-lime-200': isAnimating() && w === vocab()!.words[0] }"
+    >
       <p class="font-bold">{{ w.word }}</p>
       <p dir="rtl">{{ w.meaning }}</p>
-      <p>{{ w.line }}</p>
+      <p class="border-t-1 mt-4">{{ w.line }}</p>
     </li>
     } }
   </ul>

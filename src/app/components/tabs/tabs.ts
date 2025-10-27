@@ -1,4 +1,13 @@
-import { Component, inject, Input, OnInit, signal, ViewChild } from '@angular/core';
+import {
+  Component,
+  effect,
+  ElementRef,
+  inject,
+  input,
+  Input,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { NgClass } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ITabInfo } from '../../models/tabInfo.model';
@@ -6,41 +15,49 @@ import { Links } from '../links/links';
 import { Groups } from '../../models/group.model';
 import { ILink } from '../../models/link.model';
 import { Player } from '../player/player';
-import { Wordbook } from '../wordbook/wordbook';
 import { Icon } from '../icon/icon';
 import { TabsService } from '../../services/tabs-service';
 import { Subtitle } from '../subtitle/subtitle';
+import { LoginService } from '../../services/login-service';
+import { Profile } from '../profile/profile';
+import { IVocab } from '../../models/vocabstorage.model';
+import { Wordbook } from "../wordbook/wordbook";
 
 @Component({
   selector: 'app-tabs',
-  imports: [NgClass, RouterModule, Links, Player, Wordbook, Icon, Subtitle],
+  imports: [NgClass, RouterModule, Links, Player, Icon, Subtitle, Profile, Wordbook],
   templateUrl: './tabs.html',
   styleUrl: './tabs.scss',
 })
-export class Tabs implements OnInit {
+export class Tabs {
   tabService = inject(TabsService);
-  @Input() tabs: ITabInfo[] = [];
-  groups: { group: string; subGroups: string[] }[] = [];
+  loginService = inject(LoginService);
+  tabs = input<ITabInfo[]>([]);
+  currentLinkId = signal<string>('');
+  groups: { group: string; subGroups: string[]; label: string }[] = [];
   @Input() activeType!: Groups;
   addeword = false;
-  newWordToWordbook: { word: string; meaning: string; line: string } = {
-    word: '',
-    line: '',
-    meaning: '',
-  };
+  newWordToWordbook!: IVocab;
   selectedVideo: ILink = {
     title: '',
     youtubeId: '',
     __class: '',
     group: 'easygerman',
     objectId: '',
-    ownerId: 0,
+    ownerId: '',
     updated: '',
     sentOn: '',
-    subtitle:[{ subtitle: '', start: 0}]
+    viewer: 'all',
+    subtitle: [{ subtitle: '', start: 0 }],
   };
 
-  ngOnInit(): void {
+  constructor() {
+    effect(() => {
+      this.tabs().map((tab, index) => {
+        if (tab.type === 'others') this.tabs()[index].label = this.loginService.loggedinMember();
+      });
+    });
+
     this.getTabs();
   }
 
@@ -51,10 +68,11 @@ export class Tabs implements OnInit {
     };
     this.tabService.getTabs(params).subscribe({
       next: (result) => {
-        result.map((res) => this.groups.push({ group: res.group, subGroups: res.subGroups }));
+        result.map((res) =>
+          this.groups.push({ group: res.group, subGroups: res.subGroups, label: res.label })
+        );
       },
     });
-    console.log('%csrcappcomponents\tabs\tabs.ts:50 this.groups', 'color: #007acc;', this.groups);
   }
 
   toggleTab(type: Groups) {
@@ -62,10 +80,19 @@ export class Tabs implements OnInit {
   }
 
   onGetvideo(event: ILink) {
+    this.newWordToWordbook = {
+      linkId: this.selectedVideo.objectId ?? '',
+      owner: this.loginService.loggedinMember(),
+      words: [],
+    };
     this.selectedVideo = event;
   }
 
-  onSendToWordbook(recivedWord: { word: string; meaning: string; line: string }) {
+  onGetCurrentLink(linkId: string) {
+    this.currentLinkId.set(linkId);
+  }
+
+  onSendToWordbook(recivedWord: IVocab) {
     this.newWordToWordbook = recivedWord;
   }
 }
