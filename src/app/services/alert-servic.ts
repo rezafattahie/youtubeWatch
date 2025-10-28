@@ -4,6 +4,6 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root',
 })
 export class AlertServic {
-  status = signal<'success' | 'failed' | 'info' | 'warning'>('failed');
-  message = signal<string>('');
+  status = signal<'success' | 'failed' | 'info' | 'warning'>('success');
+  messages = signal<string[]>([]);
 }

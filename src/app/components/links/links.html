@@ -10,9 +10,11 @@
         "
         name="add"
         class="w-4 text-slate-400 hover:text-slate-200 cursor-pointer"
+        [title]="'Add new video'"
       ></app-icon>
       <app-icon
         name="search"
+        [title]="'Search'"
         (click)="
           drawer.open();
           selectedFormField.source = 'search';
@@ -24,6 +26,7 @@
       <app-icon
         (click)="drawer.open(); selectedFormField.source = 'filter'; selectedFormField.fields = []"
         name="filter"
+        [title]="'Filter'"
         class="w-6 text-slate-400 hover:text-slate-200 cursor-pointer"
       ></app-icon>
 
@@ -37,11 +40,13 @@
         <div class="flex items-center gap-3 justify-end pt-1 px-4 mb-3">
           <app-icon
             name="add"
+            [title]="'Create new sub-group'"
             class="w-4 text-slate-700 hover:text-slate-400 cursor-pointer"
           ></app-icon>
           <app-icon
             (click)="onSelectSubGroup({ group: activeType(), subGroup: '' }); drawer.close()"
             name="clearFilter"
+             [title]="'Clear all filters'"
             class="w-7 text-slate-700 hover:text-slate-400 cursor-pointer"
           ></app-icon>
         </div>
@@ -125,7 +130,9 @@
         (click)="setActiveLink(link.objectId!)"
         [routerLink]="link.group"
         class="flex flex-col items-between border-2 border-gray-100/10 justify-between hover:scale-100 px-2 pt-2 transaction-all rounded-lg duration-200 hover:bg-slate-500 mb-1"
-        [class]="activeLinkId() === link.objectId ? 'scale-100 bg-slate-500':'scale-95 bg-slate-500/30'"
+        [class]="
+          activeLinkId() === link.objectId ? 'scale-100 bg-slate-500' : 'scale-95 bg-slate-500/30'
+        "
       >
         <a
           class="flex items-start gap-2 justify-start w-full cursor-pointer hover:text-lime-300 text-lime-200"
@@ -141,13 +148,9 @@
             <app-update [UpdateWhere]="'title'" [link]="link"></app-update>
             <app-icon
               name="edit"
+               [title]="'Edit'"
               class="w-4 text-slate-400 hover:text-slate-700 cursor-pointer"
             ></app-icon>
-            <!-- <app-icon
-              name="delete"
-              (click)="onDeleteLink(link.objectId!)"
-              class="w-7 text-slate-400 hover:text-slate-700 cursor-pointer"
-            ></app-icon> -->
             <app-move-to
               (click)="drawer.open(); onMoveIconClick(link.objectId!)"
               [linkId]="link.objectId!"

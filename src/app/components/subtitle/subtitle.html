@@ -9,6 +9,7 @@
       <p class="font-bold text-lg text-left">{{ selectedWord.word }}</p>
       <app-icon
         (click)="onSendSelectedWord()"
+         [title]="'Save this word'"
         name="wortHafen"
         class="w-7 text-sky-400 cursor-pointer hover:text-sky-600"
       ></app-icon>
@@ -38,6 +39,7 @@
     </div>
     <app-icon
       (click)="onToggleSubVisible()"
+       [title]="isSubVisible ? 'Subtitle off' : 'Subtitle on'"
       name="off"
       class="w-5 cursor-pointer -ml-6 transition-all duration-200"
       [ngClass]="

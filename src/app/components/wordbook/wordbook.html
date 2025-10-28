@@ -18,8 +18,9 @@
     <app-icon
       (click)="onSyncMyWords()"
       name="refresh"
+       [title]="'Get all saved words of selected video.'"
       class="w-6 transition-all duration-300 cursor-pointer"
-      title="Sync this link's words"
+      [title]="'Sync this link words'"
       [ngClass]="
         isSyncing()
           ? 'animate-[spin_2s_ease-out_infinite] text-violet-500 scale-130'

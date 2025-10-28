@@ -1,22 +1,25 @@
 <!-- Overlay -->
 @if (isOpen()) {
-<div
-  class="fixed top-0 left-0 h-screen w-screen bg-black/70 z-40 transition-all duration-300"
-></div>
+<div class="fixed top-0 left-0 h-screen w-screen bg-black/40 z-40"></div>
 
 <!-- Alert toast -->
 <div
-  class="absolute bottom-10 flex flex-col justify-center items-between px-4 right-[50%] mx-auto translate-x-[50%] h-17 overflow-y-auto max-h-screen 2xl:max-h-200 w-[45%] mx-3 shadow-xl/30 rounded-xl z-50"
+  class="absolute bottom-10 flex flex-col justify-center items-between p-4 right-[50%] mx-auto translate-x-[50%] h-auto overflow-y-auto transition-all duration-300 max-h-screen 2xl:max-h-200 w-[45%] mx-3 shadow-lg/30 rounded-xl z-50"
   [class]="setStyle()"
 >
   <span class="flex items-center gap-3"
-    ><app-icon [name]="alertService.status()" class="w-9"></app-icon>
-    <p class="text-2xl mb-1">{{ message }}</p></span
-  >
+    ><app-icon [name]="alertService.status()" class="w-9"></app-icon
+    ><span class="flex flex-col">
+      @for (msg of messages; track $index) {
+      <p class="text-lg text-slate-800">{{ msg }}</p>
+      }
+    </span>
+  </span>
   <div class="w-5 fixed top-2 right-2">
     <app-icon
       (click)="close()"
       name="cancel"
+      [title]="'Close'"
       class="w-5 text-rose-700/70 hover:text-rose-600 cursor-pointer transition-all duration-300"
     ></app-icon>
   </div>

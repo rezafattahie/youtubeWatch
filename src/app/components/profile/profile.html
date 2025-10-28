@@ -15,12 +15,13 @@
       class="flex items-center justify-between gap-3 text-slate-700/30 transition-all duration-300"
     >
       <span (click)="logout()" class="flex items-center gap-2 cursor-not-allowed">
-        <app-icon name="youtube" class="w-5"></app-icon> <span>Youtube</span>
+        <app-icon [title]="'Youtube mode'" name="youtube" class="w-5"></app-icon>
+        <span>Youtube</span>
       </span>
 
       <app-icon
         (click)="setFavoriteMode('youtube')"
-        title="Set as default"
+        [title]="'Set as default'"
         name="favorite"
         class="w-4 cursor-pointer transition-all duration-300"
         [ngClass]="userFavoriteMode() == 'youtube' ? 'text-amber-400' : 'text-amber-50'"
@@ -30,12 +31,12 @@
       class="flex items-center justify-between gap-3 text-slate-700/30 transition-all duration-300"
     >
       <span (click)="logout()" class="flex items-center gap-2 cursor-not-allowed">
-        <app-icon name="text" class="w-5"></app-icon> <span>Text</span>
+        <app-icon  [title]="'Text mode'" name="text" class="w-5"></app-icon> <span>Text</span>
       </span>
 
       <app-icon
         (click)="setFavoriteMode('text')"
-        title="Set as default"
+        [title]="'Set as default'"
         name="favorite"
         class="w-4 cursor-pointer transition-all duration-300"
         [ngClass]="userFavoriteMode() == 'text' ? 'text-amber-400' : 'text-amber-50'"

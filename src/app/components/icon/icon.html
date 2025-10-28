@@ -1,1 +1,6 @@
-<div class="text" [ngClass]="customClass()" [innerHTML]="sanitizedSvg()"></div>
+<div
+  (mouseenter)="showTooltip()"
+  (mouseleave)="hideTooltip()"
+  [ngClass]="customClass()"
+  [innerHTML]="sanitizedSvg()"
+></div>

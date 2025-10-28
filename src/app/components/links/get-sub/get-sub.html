@@ -1,6 +1,6 @@
 <app-icon
   (click)="getSubtitle()"
-  title="'Get subtitle of ({{ link().title }})'"
+  [title]="'Get subtitle'"
   name="download"
   class="w-4 text-slate-400 hover:text-slate-700 cursor-pointer"
   [class]="isSyncing() ? 'animate-[bounce_700ms_ease-out_infinite]' : ''"
