@@ -4,7 +4,7 @@ import { ITabInfo } from './models/tabInfo.model';
 import { Groups } from './models/group.model';
 import { RouterModule } from '@angular/router';
 import { LoginService } from './services/login-service';
-import { Alert } from "./components/alert/alert";
+import { Alert } from './components/alert/alert';
 
 @Component({
   selector: 'app-root',
@@ -20,9 +20,13 @@ export class App implements OnInit {
   @Output() toggleTransaction?: EventEmitter<void> = new EventEmitter();
 
   ngOnInit(): void {
+    const emailApiId = 'ED04C550-BD52-4725-B4B2-A6EA07C2BB58';
+    const emailApiKey = 'B06323D9-2CCF-40A2-8670-E6178BCB6270';
+    Backendless.initApp(emailApiId, emailApiKey);
     for (let i = 0; i < localStorage.length; i++) {
       const keyData = localStorage.getItem(localStorage.key(i)!);
-      if(keyData && JSON.parse(keyData ).stayLogin == true) this.loginService.loggedinMember.set(localStorage.key(i)!)
+      if (keyData && JSON.parse(keyData).stayLogin == true)
+        this.loginService.loggedinMember.set(localStorage.key(i)!);
     }
   }
 

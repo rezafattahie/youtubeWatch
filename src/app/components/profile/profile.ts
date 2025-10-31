@@ -6,6 +6,7 @@ import { DatePipe, NgClass } from '@angular/common';
 import { FormsModule, Validators } from '@angular/forms';
 import { IFeedback } from '../../models/feedback.model';
 import { IForm } from '../../models/forms.model';
+import { AlertServic } from '../../services/alert-servic';
 
 @Component({
   selector: 'app-profile',
@@ -15,6 +16,7 @@ import { IForm } from '../../models/forms.model';
 })
 export class Profile {
   loginService = inject(LoginService);
+  private alertService = inject(AlertServic);
   @ViewChild('alertDrawer') alertDrawer!: DrawerForm;
   feedbacks = signal<IFeedback[]>([]);
   userFavoriteMode = signal<'youtube' | 'text' | null>(null);
@@ -27,7 +29,6 @@ export class Profile {
       validators: [Validators.required],
     },
   ];
-  userAlert = signal<{ status: 'success' | 'failed'; text: string } | null>(null);
 
   constructor() {
     effect(() => {
@@ -61,18 +62,27 @@ export class Profile {
   }
 
   onSendReport(data: any) {
-    this.userAlert.set({ status: 'success', text: '' });
     const params: IFeedback = {
       from: this.loginService.loggedinMember(),
       text: data.feedback,
     };
     this.loginService.sendFeedback(params).subscribe({
       next: () => {
-        this.userAlert.set({
-          status: 'success',
-          text: `Thanks for your feedback! I’ll respond to you as soon as possible.`,
+        this.alertService.show({
+          status: 'info',
+          message: [
+            `Dear ${this.loginService.loggedinMember()}!`,
+            'Thanks for your feedback! We’ll respond to you as soon as possible.',
+          ],
+          isOpen: true,
         });
-        this.alertDrawer.open();
+      },
+      error: (err) => {
+        this.alertService.show({
+          status: 'failed',
+          message: [err.message],
+          isOpen: true,
+        });
       },
     });
   }
@@ -84,6 +94,13 @@ export class Profile {
           this.feedbacks.set(res);
           const HasNotRead = this.feedbacks().find((fb) => !fb.respond);
           HasNotRead && this.alertDrawer.open();
+        },
+        error: (err) => {
+          this.alertService.show({
+            status: 'failed',
+            message: [err.message],
+            isOpen: true,
+          });
         },
       });
     }

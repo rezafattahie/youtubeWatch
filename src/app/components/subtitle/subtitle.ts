@@ -1,7 +1,6 @@
 import { Component, effect, inject, input, output, signal, ViewChild } from '@angular/core';
 import { DrawerForm } from '../drawer-form/drawer-form';
 import { Icon } from '../icon/icon';
-import { SubtitleService } from '../../services/subtitle-service';
 import { TranslateService } from '../../services/translate-service';
 import { PlayerStore } from '../../services/player-store';
 import { NgClass } from '@angular/common';
@@ -9,6 +8,7 @@ import { ILink } from '../../models/link.model';
 import { IVocab } from '../../models/vocabstorage.model';
 import { LoginService } from '../../services/login-service';
 import { VocabStorage } from '../../services/vocab-storage-service';
+import { AlertServic } from '../../services/alert-servic';
 
 @Component({
   selector: 'app-subtitle',
@@ -17,10 +17,10 @@ import { VocabStorage } from '../../services/vocab-storage-service';
   styleUrl: './subtitle.scss',
 })
 export class Subtitle {
-  subtitleService = inject(SubtitleService);
-  translateService = inject(TranslateService);
-  loginService = inject(LoginService);
-  vocabStorage = inject(VocabStorage);
+  private translateService = inject(TranslateService);
+  private loginService = inject(LoginService);
+  private vocabStorage = inject(VocabStorage);
+  private alertService = inject(AlertServic);
   @ViewChild('drawer') drawer!: DrawerForm;
   inputLink = input.required<ILink>();
   isSubVisible = true;
@@ -49,6 +49,13 @@ export class Subtitle {
         else this.translation = 'Translation not found';
         this.onVideoPause();
       },
+      error: (err) => {
+        this.alertService.show({
+          status: 'failed',
+          message: [err.message],
+          isOpen: true,
+        });
+      },
     });
   }
 
@@ -70,6 +77,13 @@ export class Subtitle {
       next: () => {
         this.sendToWordbook.emit(toWordbook);
         this.drawer.close();
+      },
+      error: (err) => {
+        this.alertService.show({
+          status: 'failed',
+          message: [err.message],
+          isOpen: true,
+        });
       },
     });
   }

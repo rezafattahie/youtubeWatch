@@ -2,6 +2,7 @@ import { Component, effect, inject, input } from '@angular/core';
 import { LinksService } from '../../../services/links-service';
 import { Icon } from '../../icon/icon';
 import { _videoLinks } from '../../../signalStorage/videoLinks.signal';
+import { AlertServic } from '../../../services/alert-servic';
 
 @Component({
   selector: 'app-move-to',
@@ -11,6 +12,7 @@ import { _videoLinks } from '../../../signalStorage/videoLinks.signal';
 })
 export class MoveTo {
   private linkService = inject(LinksService);
+  private alertService = inject(AlertServic);
 
   linkId = input<string>('');
   moveTo = input<{ group: string; subGroup?: string }>({ group: '', subGroup: '' });
@@ -43,7 +45,12 @@ export class MoveTo {
             current.map((l) => (l.objectId === res.objectId ? res : l))
           );
         },
-        error: (err) => alert(err?.error?.message || err),
+        error: (err) =>
+          this.alertService.show({
+            status: 'failed',
+            message: [err.message],
+            isOpen: true,
+          }),
       });
   }
 }

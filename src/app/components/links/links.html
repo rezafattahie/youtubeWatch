@@ -46,7 +46,7 @@
           <app-icon
             (click)="onSelectSubGroup({ group: activeType(), subGroup: '' }); drawer.close()"
             name="clearFilter"
-             [title]="'Clear all filters'"
+            [title]="'Clear all filters'"
             class="w-7 text-slate-700 hover:text-slate-400 cursor-pointer"
           ></app-icon>
         </div>
@@ -112,7 +112,7 @@
     </div>
 
     <!-- link list -->
-    <ul class="p-2 w-full h-[calc(100vh-133px)] overflow-y-auto">
+    <ul class="p-2 w-full h-[calc(100vh-150px)] overflow-y-auto">
       @if (videoLinks().length == 0) {
       <div class="text-center m-10">
         <app-icon
@@ -125,6 +125,7 @@
       <li class="rounded-2xl text-md text-blue-800 text-center py-3 bg-blue-300 mb-3">
         {{ selectedSubGroup().subGroup }}
       </li>
+
       } @for (link of filteredVideoLinks(); track $index) {
       <li
         (click)="setActiveLink(link.objectId!)"
@@ -148,7 +149,7 @@
             <app-update [UpdateWhere]="'title'" [link]="link"></app-update>
             <app-icon
               name="edit"
-               [title]="'Edit'"
+              [title]="'Edit'"
               class="w-4 text-slate-400 hover:text-slate-700 cursor-pointer"
             ></app-icon>
             <app-move-to
@@ -160,7 +161,13 @@
           </div>
         </div>
       </li>
-      }}
+      } }
     </ul>
+    <div class="w-full gap-8 mt-2 flex items-center justify-center">
+      <p class="">
+        cotnt:
+        {{ filteredVideoLinks().length }}
+      </p>
+    </div>
   </div>
 </aside>

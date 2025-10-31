@@ -5,26 +5,25 @@ import { IVocab } from '../../models/vocabstorage.model';
 import { IWord } from '../../models/word.model';
 import { VocabStorage } from '../../services/vocab-storage-service';
 import { LoginService } from '../../services/login-service';
-import { ILink } from '../../models/link.model';
-import { DrawerForm } from '../drawer-form/drawer-form';
+import { AlertServic } from '../../services/alert-servic';
 
 @Component({
   selector: 'app-wordbook',
-  imports: [Icon, NgClass, DrawerForm],
+  imports: [Icon, NgClass],
   templateUrl: './wordbook.html',
   styleUrl: './wordbook.scss',
 })
 export class Wordbook {
   vocabStorage = inject(VocabStorage);
   loginService = inject(LoginService);
-  @ViewChild('alertDrawer') alertDrawer!: DrawerForm;
+  private alertService = inject(AlertServic);
   selectedLinkId = input.required<string>();
   vocab = input<IVocab>();
   wordList = signal<{ linkId: string; words: IWord[] }[]>([]);
   currentLinkWords = signal<IWord[]>([]);
   isAnimating = signal(false);
   isSyncing = signal(false);
-  userAlert = signal<{ status: string; text: string }>({ status: '', text: '' });
+
   showHafen = false;
   blink = false;
 
@@ -47,8 +46,11 @@ export class Wordbook {
   onSyncMyWords() {
     if (!this.selectedLinkId()) {
       this.isSyncing.set(false);
-      this.userAlert.set({ status: 'failed', text: 'You must select a video first.' });
-      this.alertDrawer.open();
+      this.alertService.show({
+        status: 'warning',
+        message: ['You must select a video first.'],
+        isOpen: true,
+      });
     } else {
       this.isSyncing.set(true);
       this.vocabStorage
@@ -69,8 +71,11 @@ export class Wordbook {
             this.isSyncing.set(false);
           },
           error: (err) => {
-            this.userAlert.set({ status: 'failed', text: err.message });
-            this.isSyncing.set(false);
+            this.alertService.show({
+              status: 'failed',
+              message: [err.message],
+              isOpen: true,
+            });
           },
         });
     }

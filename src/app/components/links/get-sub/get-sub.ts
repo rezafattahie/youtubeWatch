@@ -4,6 +4,7 @@ import { ILink, ILink_request } from '../../../models/link.model';
 import { SubtitleService } from '../../../services/subtitle-service';
 import { LinksService } from '../../../services/links-service';
 import { _videoLinks } from '../../../signalStorage/videoLinks.signal';
+import { AlertServic } from '../../../services/alert-servic';
 
 @Component({
   selector: 'app-get-sub',
@@ -12,8 +13,9 @@ import { _videoLinks } from '../../../signalStorage/videoLinks.signal';
   styleUrl: './get-sub.scss',
 })
 export class GetSub {
-  subtitleService = inject(SubtitleService);
-  linkService = inject(LinksService);
+  private subtitleService = inject(SubtitleService);
+  private linkService = inject(LinksService);
+  private alertService = inject(AlertServic);
   link = input.required<ILink>();
   isSyncing = signal(false);
   getSubtitle() {
@@ -40,13 +42,24 @@ export class GetSub {
               );
             },
             error: (err) => {
-              alert(err.message);
+              this.alertService.show({
+                status: 'failed',
+                message: [err.message],
+                isOpen: true,
+              });
             },
           });
           this.isSyncing.set(false);
         },
         error: (err) => {
-          alert(err.message);
+          this.alertService.show({
+            status: 'failed',
+            message: [
+              'The secondary server for downloading subtitles is temporarily unavailable.',
+              'Please try again over the next few days.',
+            ],
+            isOpen: true,
+          });
           this.isSyncing.set(false);
         },
       });

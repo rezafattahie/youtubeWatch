@@ -1,22 +1,23 @@
-import { Component, inject, signal, ViewChild } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { NgClass } from '@angular/common';
 
 import { LoginService } from '../../services/login-service';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DrawerForm } from '../drawer-form/drawer-form';
+import { UtilityService } from '../../services/utility-service';
+import { AlertServic } from '../../services/alert-servic';
 
 @Component({
   selector: 'app-login',
-  imports: [NgClass, ReactiveFormsModule, DrawerForm],
+  imports: [NgClass, ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
 export class Login {
   loginService = inject(LoginService);
+  utility = inject(UtilityService);
+  alertService = inject(AlertServic);
   router = inject(Router);
-  @ViewChild('alertMessage') alertMessage!: DrawerForm;
-  alert = signal<{ status: 'success' | 'failed'; text: string } | null>(null);
   loginMode: 'Login' | 'Join' = 'Login';
   loginForm!: FormGroup;
 
@@ -29,11 +30,30 @@ export class Login {
     this.loginMode = mode;
     if ((mode = 'Login')) {
       this.loginForm = new FormGroup({
-        username: new FormControl(),
-        email: new FormControl(),
-        stayLogin: new FormControl(),
+        username: new FormControl('', [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.maxLength(15),
+        ]),
+        email: new FormControl('', [Validators.email]),
+        stayLogin: new FormControl(false),
       });
     }
+  }
+
+  sendEmail(email: string, template: string, options: {}) {
+    this.utility.sendEmail(
+      template,
+      {
+        addresses: [email],
+        bcc: [],
+        cc: [],
+        from: 'Reza from WrotHafen',
+        query: '',
+        replyTo: ['worthafen@app-reza.com'],
+      },
+      options
+    );
   }
 
   onSubmitForm() {
@@ -60,14 +80,32 @@ export class Login {
 
               this.loginService.loggedinMember.set(res.name);
               this.router.navigate(['/easygerman']);
+
+              this.sendEmail('rezafatahy@gmail.com', 'user logins', {
+                user: res.name,
+                date: new Intl.DateTimeFormat('en-EN', {
+                  weekday: 'long',
+                  day: '2-digit',
+                  month: 'long',
+                  year: 'numeric',
+                  hour:'2-digit',
+                  minute:'2-digit'
+                }).format(new Date()),
+              });
             } else {
-              this.alert.set({ status: 'failed', text: `user "${username}" not found` });
-              this.alertMessage.open();
+              this.alertService.show({
+                status: 'failed',
+                message: [`User with the name "${username}" was not found.`],
+                isOpen: true,
+              });
             }
           },
           error: (err) => {
-            this.alert.set({ status: 'failed', text: err.message });
-            this.alertMessage.open();
+            this.alertService.show({
+              status: 'failed',
+              message: [err.message],
+              isOpen: true,
+            });
           },
         });
       } else {
@@ -75,12 +113,24 @@ export class Login {
         this.loginService.createAccount(user).subscribe({
           next: (res) => {
             this.loginService.loggedinMember.set(res.name);
+            this.alertService.show({
+              status: 'info',
+              message: [`Dear ${res.name}!`, 'Glad you joined us. We hope you have a great time getting started.'],
+              isOpen: true,
+            });
             this.router.navigate(['/easygerman']);
+            email != null &&
+              this.sendEmail(user.email, 'register', {
+                identity_name: user.name,
+                app_name: 'Wort Hafen',
+              });
           },
           error: (err) => {
-            if (err.code == 1406)
-              this.alert.set({ status: 'failed', text: 'Maximum Character: 15' });
-            this.alertMessage.open();
+            this.alertService.show({
+              status: 'failed',
+              message: [err.message],
+              isOpen: true,
+            });
           },
         });
       }

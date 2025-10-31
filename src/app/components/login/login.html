@@ -1,10 +1,4 @@
 @if (!loginService.loggedinMember()) {
-<div class="relative top-20">
-  <app-drawer-form #alertMessage>
-    {{ alert()?.text }}
-  </app-drawer-form>
-</div>
-
 <div class="pt-85 h-screen bg-slate-400/50">
   <div
     class="fixed text-slate-300 bg-slate-900 shadow-xl/60 rounded-4xl top-[50%] left-[50%] -translate-[50%] w-100 h-100 transition-h duration-800"
@@ -69,10 +63,25 @@
         </div>
         }
       </div>
+      <!-- Form Validators -->
+      <div class="flex flex-col items-center text-rose-400 mt-2">
+        @if (loginForm.get('username')?.touched && loginForm.get('username')?.invalid) {
+        @if(loginForm.get('username')?.errors?.['minlength']) {
+        <small>* Username must be at least 3 characters. </small>
+        }@if(loginForm.get('username')?.errors?.['maxlength']) {
+        <small>* Username should not be longer than 15 characters.</small>} } @if
+        (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
+        <small>* Invalid Email Address.</small>}
+      </div>
 
-      <div class="w-full flex flex-col items-center px-3 justify-center fixed bottom-10">
+      <div class="w-full flex flex-col items-center px-3 justify-center fixed bottom-4">
         <button
-          class="font-bold bg-amber-600 rounded-full hover:shadow-md/30 w-40 cursor-pointer hover:bg-amber-500 px-6 py-3 transition-all duration-200"
+          class="font-bold rounded-full hover:shadow-md/30 w-40 px-6 py-3 transition-all duration-200"
+          [ngClass]="
+            loginForm.touched && loginForm.invalid
+              ? 'bg-slate-500 hover:bg-slate-500 cursor-not-allowed'
+              : 'bg-amber-600 cursor-pointer hover:bg-amber-500'
+          "
         >
           {{ loginMode }}
         </button>

@@ -21,7 +21,8 @@ import { Subtitle } from '../subtitle/subtitle';
 import { LoginService } from '../../services/login-service';
 import { Profile } from '../profile/profile';
 import { IVocab } from '../../models/vocabstorage.model';
-import { Wordbook } from "../wordbook/wordbook";
+import { Wordbook } from '../wordbook/wordbook';
+import { AlertServic } from '../../services/alert-servic';
 
 @Component({
   selector: 'app-tabs',
@@ -30,8 +31,9 @@ import { Wordbook } from "../wordbook/wordbook";
   styleUrl: './tabs.scss',
 })
 export class Tabs {
-  tabService = inject(TabsService);
-  loginService = inject(LoginService);
+  private tabService = inject(TabsService);
+  private loginService = inject(LoginService);
+  private alertService = inject(AlertServic);
   tabs = input<ITabInfo[]>([]);
   currentLinkId = signal<string>('');
   groups: { group: string; subGroups: string[]; label: string }[] = [];
@@ -71,6 +73,13 @@ export class Tabs {
         result.map((res) =>
           this.groups.push({ group: res.group, subGroups: res.subGroups, label: res.label })
         );
+      },
+      error: (err) => {
+        this.alertService.show({
+          status: 'failed',
+          message: [err.message],
+          isOpen: true,
+        });
       },
     });
   }

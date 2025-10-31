@@ -4,6 +4,7 @@ import { Icon } from '../../icon/icon';
 import { UtilityService } from '../../../services/utility-service';
 import { LinksService } from '../../../services/links-service';
 import { _videoLinks } from '../../../signalStorage/videoLinks.signal';
+import { AlertServic } from '../../../services/alert-servic';
 
 @Component({
   selector: 'app-update',
@@ -12,9 +13,9 @@ import { _videoLinks } from '../../../signalStorage/videoLinks.signal';
   styleUrl: './update.scss',
 })
 export class Update {
-  utilityservice = inject(UtilityService);
-  linkService = inject(LinksService);
-
+  private utilityservice = inject(UtilityService);
+  private linkService = inject(LinksService);
+  private alertService = inject(AlertServic);
   link = input.required<ILink>();
   UpdateWhere = input<string>();
   isSyncing = signal<boolean>(false);
@@ -43,13 +44,21 @@ export class Update {
               );
             },
             error: (err) => {
-              alert(err.message);
+              this.alertService.show({
+                status: 'failed',
+                message: [err.message],
+                isOpen: true,
+              });
             },
           });
           this.isSyncing.set(false);
         },
         error: (err) => {
-          alert('Video details not found!');
+          this.alertService.show({
+            status: 'failed',
+            message: ['Video details was not found!'],
+            isOpen: true,
+          });
           this.isSyncing.set(false);
         },
       });

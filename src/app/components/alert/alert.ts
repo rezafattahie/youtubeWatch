@@ -1,19 +1,18 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
 import { Icon } from '../icon/icon';
 import { AlertServic } from '../../services/alert-servic';
 import { NgClass } from '@angular/common';
 
-
 @Component({
   selector: 'app-alert',
-  imports: [Icon],
+  imports: [Icon, NgClass],
   templateUrl: './alert.html',
   styleUrl: './alert.scss',
 })
 export class Alert implements OnInit {
   alertService = inject(AlertServic);
-  isOpen = signal(false);
-  messages = ['salam in ye texte etsti hast'];
+  isOpen = computed(() => this.alertService.isOpen());
+  messages = computed(() => this.alertService.messages());;
 
   constructor() {}
 
@@ -44,6 +43,6 @@ export class Alert implements OnInit {
   }
 
   close() {
-    this.isOpen.set(false);
+    this.alertService.isOpen.set(false);
   }
 }

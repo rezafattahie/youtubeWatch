@@ -29,10 +29,14 @@ export class LinksService {
     return this.api.delete('videoLinks', body);
   }
 
-  moveLink(objectId: string, newLocation: { group: string; subGroup?: string }): Observable<any> {
+  moveLink(
+    objectId: string,
+    newLocation: { group: string; subGroup?: string;}
+  ): Observable<any> {
     return this.api.put(`videoLinks/${objectId}`, {
       group: newLocation.group,
       subGroup: newLocation.subGroup ?? null,
+      viewer: 'all',
     });
   }
 }

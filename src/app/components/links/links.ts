@@ -24,6 +24,7 @@ import { catchError, concatMap, map, of } from 'rxjs';
 import { LoginService } from '../../services/login-service';
 import { Update } from './update/update';
 import { GetSub } from './get-sub/get-sub';
+import { AlertServic } from '../../services/alert-servic';
 
 @Component({
   selector: 'app-links',
@@ -35,6 +36,7 @@ export class Links {
   private linkService = inject(LinksService);
   private subtitleService = inject(SubtitleService);
   private loginService = inject(LoginService);
+  private alertService = inject(AlertServic);
 
   @Output() selectedVideo: EventEmitter<ILink> = new EventEmitter();
   @Output() currentLinkId: EventEmitter<string> = new EventEmitter();
@@ -88,6 +90,13 @@ export class Links {
           _videoLinks.set(result);
         }
       },
+      error: (err) => {
+        this.alertService.show({
+          status: 'failed',
+          message: [err.message],
+          isOpen: true,
+        });
+      },
     });
   }
 
@@ -104,23 +113,25 @@ export class Links {
         sentOn: data.sentOn,
         subGroup: data.subGroup ?? null,
         subtitle: [{ subtitle: '', start: 0 }],
-        viewer: '',
+        viewer: this.activeType() === 'others' ? this.loginService.loggedinMember() : 'all',
       };
 
       this.subtitleService
         .getSubtitle(body.youtubeId)
         .pipe(
           map((subtitle) => {
-            if (this.activeType() === 'others') {
-              body.viewer = this.loginService.loggedinMember();
-            } else {
-              body.viewer = 'all';
-            }
             body.subtitle = subtitle.subtitle;
             return body;
           }),
           catchError((error) => {
-            alert('⚠️ Failed to retrieve subtitles. Your link has been added without subtitles.');
+            this.alertService.show({
+              status: 'warning',
+              message: [
+                'Failed to retrieve subtitles.',
+                ' Your link has been added without subtitles.',
+              ],
+              isOpen: true,
+            });
             body.subtitle = [];
             return of(body);
           }),
@@ -128,7 +139,13 @@ export class Links {
         )
         .subscribe({
           next: (res) => _videoLinks.update((current) => [...current, res]),
-          error: (err) => alert(err),
+          error: (err) => {
+            this.alertService.show({
+              status: 'failed',
+              message: [err.message],
+              isOpen: true,
+            });
+          },
         });
     }
   }
@@ -215,6 +232,7 @@ export class Links {
   }
 
   onMoveIconClick(linkId: string) {
+    this.moveTo.set({ group: '', subGroup: '' });
     this.openGroups.clear();
     this.activeLinkId.set(linkId);
     this.selectedFormField.source = 'moveto';

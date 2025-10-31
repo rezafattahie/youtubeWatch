@@ -1,16 +1,19 @@
 <!-- Overlay -->
-@if (isOpen()) {
-<div class="fixed top-0 left-0 h-screen w-screen bg-black/40 z-40"></div>
+<div
+  class="fixed top-0 left-0 h-screen w-screen bg-black/80 z-[99]"
+  [class.hidden]="!isOpen()"
+></div>
 
 <!-- Alert toast -->
 <div
-  class="absolute bottom-10 flex flex-col justify-center items-between p-4 right-[50%] mx-auto translate-x-[50%] h-auto overflow-y-auto transition-all duration-300 max-h-screen 2xl:max-h-200 w-[45%] mx-3 shadow-lg/30 rounded-xl z-50"
+  class="fixed top-0 flex flex-col justify-center items-between p-4 right-1/2 translate-x-1/2 h-auto overflow-y-auto transition-all duration-400 ease-in-out max-h-screen w-[45%] mx-3 shadow-lg/30 rounded-xl z-[100]"
   [class]="setStyle()"
+  [ngClass]="isOpen() ? 'translate-y-20 opacity-100' : '-translate-y-20 opacity-0'"
 >
   <span class="flex items-center gap-3"
     ><app-icon [name]="alertService.status()" class="w-9"></app-icon
     ><span class="flex flex-col">
-      @for (msg of messages; track $index) {
+      @for (msg of messages(); track $index) {
       <p class="text-lg text-slate-800">{{ msg }}</p>
       }
     </span>
@@ -24,4 +27,3 @@
     ></app-icon>
   </div>
 </div>
-}

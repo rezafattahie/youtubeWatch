@@ -18,6 +18,7 @@ export class Icon implements OnDestroy {
   class = input<string>(''); // tailwind classes
   customClass = computed(() => this.class());
   title = input<string>();
+  private showTimeout?: any;
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -32,44 +33,46 @@ export class Icon implements OnDestroy {
   });
 
   showTooltip() {
-    if (this.overlayRef) return; // prevent to open tooltip several times
+    this.showTimeout = setTimeout(() => {
+      if (this.overlayRef) return; // prevent to open tooltip several times
 
-    const positionStrategy = this.overlayPositionBuilder
-      .flexibleConnectedTo(this.elementRef)
-      .withPositions([
-        {
-          originX: 'center',
-          originY: 'top',
-          overlayX: 'center',
-          overlayY: 'bottom',
-          offsetY: -8,
-        },
-        {
-          originX: 'center',
-          originY: 'bottom',
-          overlayX: 'center',
-          overlayY: 'top',
-          offsetY: 8,
-        },
-      ]);
+      const positionStrategy = this.overlayPositionBuilder
+        .flexibleConnectedTo(this.elementRef)
+        .withPositions([
+          {
+            originX: 'center',
+            originY: 'top',
+            overlayX: 'center',
+            overlayY: 'bottom',
+            offsetY: -8,
+          },
+          {
+            originX: 'center',
+            originY: 'bottom',
+            overlayX: 'center',
+            overlayY: 'top',
+            offsetY: 8,
+          },
+        ]);
 
-    this.overlayRef = this.overlay.create({
-      positionStrategy,
-      hasBackdrop: false,
-      scrollStrategy: this.overlay.scrollStrategies.reposition(),
-      panelClass: 'tooltip-panel',
-    });
+      this.overlayRef = this.overlay.create({
+        positionStrategy,
+        hasBackdrop: false,
+        scrollStrategy: this.overlay.scrollStrategies.reposition(),
+        panelClass: 'tooltip-panel',
+      });
 
-    const tooltipPortal = new ComponentPortal(Tooltip);
-    const tooltipRef = this.overlayRef.attach(tooltipPortal);
-    tooltipRef.instance.text = this.title;
+      const tooltipPortal = new ComponentPortal(Tooltip);
+      const tooltipRef = this.overlayRef.attach(tooltipPortal);
+      tooltipRef.instance.text = this.title;
+    }, 500);
   }
 
   hideTooltip() {
+    clearTimeout(this.showTimeout);
     this.overlayRef?.dispose();
     this.overlayRef = undefined;
   }
-
   ngOnDestroy() {
     this.hideTooltip();
   }

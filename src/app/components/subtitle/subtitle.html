@@ -22,7 +22,7 @@
   @if(currentLine().length > 0 ) {
   <div class="flex justify-center w-full items-center">
     <div
-      class="font-medium w-full flex items-center justify-center flex-wrap text-xl 2xl:text-3xl bg-slate-950/30 text-slate-950 mx-auto text-center p-3"
+      class="w-full flex items-center justify-center flex-wrap text-lg 2xl:text-2xl bg-slate-950/30 text-slate-900 mx-auto text-center px-10 py-1"
       [ngClass]="!isSubVisible ? 'hidden' : ''"
     >
       @for (word of currentLine(); track $index) {

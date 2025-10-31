@@ -2,15 +2,11 @@
   class="fixed top-[48px] right-0 mt-2 p-2 bg-slate-200 m-l-2 w-20 text-center h-14 rounded-l-2xl transaction-all duration-200"
   [ngClass]="showHafen ? 'h-[calc(100vh-70px)] w-56 text-start' : ''"
 >
-  <div class="relative top-4 right-25">
-    <app-drawer-form #alertDrawer
-      ><span class="text-sky-800">{{ userAlert().text }}</span></app-drawer-form
-    >
-  </div>
   <div class="flex items-center justify-between gap-3 px-3">
     <app-icon
       (click)="showHafen = !showHafen"
       name="wortHafen"
+      [title]="showHafen ? 'Hide' : 'Show'"
       class="w-10 cursor-pointer hover:text-blue-700 transaction-all duration-200"
       [ngClass]="{ 'text-rose-600': isAnimating(), 'text-blue-400': !isAnimating() }"
     ></app-icon>
@@ -18,7 +14,7 @@
     <app-icon
       (click)="onSyncMyWords()"
       name="refresh"
-       [title]="'Get all saved words of selected video.'"
+      [title]="'Get all saved words of selected video.'"
       class="w-6 transition-all duration-300 cursor-pointer"
       [title]="'Sync this link words'"
       [ngClass]="
@@ -31,8 +27,7 @@
   </div>
   @if (showHafen) {
   <ul class="h-[calc(100vh-150px)] overflow-y-auto">
-    @for (w of currentLinkWords(); track $index) {
-       @if(w.word) {
+    @for (w of currentLinkWords(); track $index) { @if(w.word) {
     <li
       class="bg-lime-100/30 p-4 mb-1 rounded-lg hover:shadow-lg cursor-default transaction-all duration-100 scale-95 hover:scale-100 hover:bg-lime-200"
       [ngClass]="{ 'bg-lime-200': isAnimating() && w === vocab()!.words[0] }"
