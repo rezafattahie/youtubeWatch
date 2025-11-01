@@ -1,15 +1,15 @@
 <div
   (click)="profile.open()"
-  class="flex absolute items-center my-1 justify-center w-50 text-center"
+  class="flex absolute top-3 md:top-1 left-5 justify-center w-auto text-center"
 >
   <span
     class="flex items-center gap-4 px-2 z-50 py-1 rounded-full text-lg text-violet-300 hover:shadow-md/30 hover:bg-violet-500/10 cursor-pointer"
   >
+    <app-icon name="loadMore" class="w-5 rotate-45 text-white"> </app-icon>
     <p>{{ loginService.loggedinMember() }}</p>
-    <app-icon name="up" class="w-3 rotate-90 mt-2"> </app-icon>
   </span>
 </div>
-<div class="relative top-16 left-65">
+<div class="relative md:absolute left-35 md:left-40 md:top-12 top-8">
   <app-drawer-form #profile>
     <p
       class="flex items-center justify-between gap-3 text-slate-700/30 transition-all duration-300"

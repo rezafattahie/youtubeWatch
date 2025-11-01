@@ -1,7 +1,7 @@
 @if (!loginService.loggedinMember()) {
-<div class="pt-85 h-screen bg-slate-400/50">
+<div class="h-screen bg-slate-800">
   <div
-    class="fixed text-slate-300 bg-slate-900 shadow-xl/60 rounded-4xl top-[50%] left-[50%] -translate-[50%] w-100 h-100 transition-h duration-800"
+    class="fixed scale-85 md:scale-120 text-slate-300 bg-slate-900 shadow-xl/60 rounded-4xl top-[50%] left-[50%] -translate-[50%] w-100 h-100 transition-h duration-800"
   >
     <div class="flex flex items-enter justify-start">
       <a
@@ -68,10 +68,14 @@
         @if (loginForm.get('username')?.touched && loginForm.get('username')?.invalid) {
         @if(loginForm.get('username')?.errors?.['minlength']) {
         <small>* Username must be at least 3 characters. </small>
+        } @if(loginForm.get('username')?.errors?.['required']) {
+        <small>* Username is required. </small>
         }@if(loginForm.get('username')?.errors?.['maxlength']) {
-        <small>* Username should not be longer than 15 characters.</small>} } @if
-        (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
-        <small>* Invalid Email Address.</small>}
+        <small>* Username should not be longer than 15 characters.</small>} } @if(loginMode ===
+        'Join') { @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
+        @if(loginForm.get('email')?.errors?.['required']) {
+        <small>* Email is required. </small>
+        }@else { <small>* Invalid Email Address.</small>} } }
       </div>
 
       <div class="w-full flex flex-col items-center px-3 justify-center fixed bottom-4">

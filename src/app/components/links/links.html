@@ -1,7 +1,9 @@
-<aside class="h-[calc(100vh-67px)] mt-2">
-  <div class="h-full overflow-x-hidden bg-slate-900 w-80 text-slate-300 rounded-r-2xl">
+<aside class="h-[calc(100vh-40px)] w-screen md:w-80">
+  <div
+    class="h-full w-full md:w-80 overflow-x-hidden bg-slate-900 text-slate-300 text-sm md:text-medium"
+  >
     <!-- actions -->
-    <div class="flex flex-row-reverse items-center justify-start mt-5 px-4 gap-3 relative">
+    <div class="flex flex-row items-center justify-end gap-10 my-3 relative w-full">
       <app-icon
         (click)="
           drawer.open();
@@ -12,6 +14,7 @@
         class="w-4 text-slate-400 hover:text-slate-200 cursor-pointer"
         [title]="'Add new video'"
       ></app-icon>
+
       <app-icon
         name="search"
         [title]="'Search'"
@@ -112,21 +115,21 @@
     </div>
 
     <!-- link list -->
-    <ul class="p-2 w-full h-[calc(100vh-150px)] overflow-y-auto">
+    <ul class="relative p-2 h-[calc(100vh-150px)] mx-auto overflow-y-auto">
       @if (videoLinks().length == 0) {
-      <div class="text-center m-10">
+      <div class="absolute top-1/5 left-[50%] text-center -translate-x-[50%]">
         <app-icon
           name="spin"
-          class="w-30 text-center text-lime-600 animate-[spin_2s_ease-out_infinite]"
+          class="w-20 text-center text-lime-600 animate-[spin_2s_ease-out_infinite]"
         ></app-icon>
       </div>
 
-      }@else { @if(selectedSubGroup().subGroup) {
+      } @else { @if(selectedSubGroup().subGroup) {
       <li class="rounded-2xl text-md text-blue-800 text-center py-3 bg-blue-300 mb-3">
         {{ selectedSubGroup().subGroup }}
       </li>
 
-      } @for (link of filteredVideoLinks(); track $index) {
+      } @if (filteredVideoLinks().length > 0) {@for (link of filteredVideoLinks(); track $index) {
       <li
         (click)="setActiveLink(link.objectId!)"
         [routerLink]="link.group"
@@ -160,6 +163,10 @@
             ></app-move-to>
           </div>
         </div>
+      </li>
+      }} @else {
+      <li class="rounded-2xl text-md text-blue-200 text-center py-3 bg-blue-300/40 mb-3">
+        Nothing here — add your first item!
       </li>
       } }
     </ul>

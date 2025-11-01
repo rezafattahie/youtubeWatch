@@ -35,6 +35,8 @@ export class Tabs {
   private loginService = inject(LoginService);
   private alertService = inject(AlertServic);
   tabs = input<ITabInfo[]>([]);
+  isMenuOpen = false;
+  isLinksOpen = true;
   currentLinkId = signal<string>('');
   groups: { group: string; subGroups: string[]; label: string }[] = [];
   @Input() activeType!: Groups;
@@ -88,7 +90,12 @@ export class Tabs {
     this.activeType = type;
   }
 
+  toggleLinkList() {
+    this.isLinksOpen = true;
+  }
+
   onGetvideo(event: ILink) {
+    this.isLinksOpen = false;
     this.newWordToWordbook = {
       linkId: this.selectedVideo.objectId ?? '',
       owner: this.loginService.loggedinMember(),

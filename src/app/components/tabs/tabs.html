@@ -1,12 +1,32 @@
-<!-- Tab selector -->
-<div class="flex justify-between bg-slate-800">
-  <app-profile></app-profile>
-  <div class="w-[calc(100vw-200px)]">
-    <ul class="flex items-center justify-center gap-5 text-center text-xs text-lime-100">
+<!-- Top bar -->
+<div class="flex items-center w-screen justify-between bg-slate-800 p-2 md:p-0">
+  <!-- Profile -->
+  <div class="flex items-center justify-between gap-2">
+    <!-- Hamburger only on mobile/tablet -->
+
+    <button class="md:hidden flex items-center justify-between" (click)="isMenuOpen = true">
+      @for (item of tabs(); track $index){ @if (item.type === activeType) {<span
+        class="md:hidden px-3 h-full"
+        [class]="activeType !== item.type ? item.hoverClass : ''"
+        [ngClass]="activeType === item.type ? item.activeClass + 'scale-x-100 pl-6' : 'w-full'"
+        ><span class="mr-4">☰</span>{{ item.label }}</span
+      >
+      } }
+    </button>
+  </div>
+  <app-wordbook
+    class="md:w-[20%]"
+    [selectedLinkId]="currentLinkId()"
+    [vocab]="newWordToWordbook"
+  ></app-wordbook>
+
+  <!-- Desktop Tabs -->
+  <div class="hidden md:block w-[60%]">
+    <ul class="flex items-center justify-center gap-4 text-center text-xs text-lime-100">
       @for (item of tabs(); track $index) {
-      <li (click)="toggleTab(item.type)" [routerLink]="item.type">
+      <li class="cursor-pointer w-30 mt-2" (click)="toggleTab(item.type)" [routerLink]="item.type">
         <a
-          class="inline-block py-4 w-30 transition-all ease-in duration-100 cursor-pointer rounded-b-2xl"
+          class="inline-block py-4 w-full transition-all ease-in duration-100 rounded-b-2xl"
           [ngClass]="activeType === item.type ? item.activeClass : ''"
           [class]="item.hoverClass"
         >
@@ -16,11 +36,57 @@
       }
     </ul>
   </div>
+  <div class="hidden md:block md:w-[20%]">
+    <app-profile></app-profile>
+  </div>
+</div>
+
+<!-- Drawer Overlay (Mobile) -->
+@if(isMenuOpen) {
+<div class="fixed inset-0 z-40 md:hidden" (click)="isMenuOpen = false"></div>
+}
+
+<!-- Drawer Menu -->
+<div
+  class="fixed top-0 left-0 h-full bg-slate-800 shadow-lg w-64 z-50 transform transition-transform duration-300 md:hidden"
+  [ngClass]="isMenuOpen ? 'translate-x-0' : '-translate-x-full'"
+>
+  <div class="p-4 text-lime-100 border-b border-slate-400 flex justify-between items-center">
+    <app-profile></app-profile>
+    <button (click)="isMenuOpen = false" class="text-xl">✖</button>
+  </div>
+
+  <ul class="flex flex-col items-start gap-3 p-4 text-sm text-lime-100">
+    @for (item of tabs(); track $index) {
+    <li
+      (click)="toggleTab(item.type); isMenuOpen = false"
+      [routerLink]="item.type"
+      class="cursor-pointer py-3 rounded transition px-3"
+      [class]="activeType !== item.type ? item.hoverClass : ''"
+      [ngClass]="
+        activeType === item.type
+          ? item.activeClass + 'border-b-1 scale-x-90 w-[70%] pl-6'
+          : 'w-full'
+      "
+    >
+      {{ item.label }}
+    </li>
+    }
+  </ul>
 </div>
 
 <!-- Tab content -->
-<div class="flex relative h-full w-full delay-200">
+<div class="flex relative h-full w-full">
+  <app-icon
+    (click)="toggleLinkList()"
+    name="up"
+    class="w-6 absolute md:hidden top-3 left-0 text-amber-400 -rotate-45 hover:text-amber-600"
+    [ngClass]="isLinksOpen ? 'hidden' : ''"
+  ></app-icon>
+
   <app-links
+    class="md:block transition-all duration-400"
+    [class.hidden]="!isLinksOpen"
     [activeType]="activeType"
     [groups]="groups"
     (selectedVideo)="onGetvideo($event)"
@@ -38,17 +104,16 @@
       <app-player
         [selectedVideo]="selectedVideo"
         id="yt-player"
-        class="w-[calc(100vw-560px)] h-[calc(100vh-150px)] my-2 mx-2 z-10"
+        class="w-screen h-[calc(100vh-500px)] my-15 right-3 md:w-[calc(100vw-560px)] md:h-[calc(100vh-150px)] md:my-2 md:mx-2 z-10"
       ></app-player>
 
       <app-subtitle
-        class="z-50"
+        class="md:z-50"
         [inputLink]="selectedVideo"
         (sendToWordbook)="onSendToWordbook($event)"
       ></app-subtitle>
     </div>
 
     }
-    <app-wordbook [selectedLinkId]="currentLinkId()" [vocab]="newWordToWordbook"></app-wordbook>
   </div>
 </div>

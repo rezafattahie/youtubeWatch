@@ -1,20 +1,22 @@
 <!-- Overlay -->
+<!-- @if (isOpen()) { -->
 <div
   class="fixed top-0 left-0 h-screen w-screen bg-black/80 z-[99]"
   [class.hidden]="!isOpen()"
+  (click)="close()"
 ></div>
 
 <!-- Alert toast -->
 <div
-  class="fixed top-0 flex flex-col justify-center items-between p-4 right-1/2 translate-x-1/2 h-auto overflow-y-auto transition-all duration-400 ease-in-out max-h-screen w-[45%] mx-3 shadow-lg/30 rounded-xl z-[100]"
+  class="fixed top-0 flex flex-col justify-center w-[90%] sm:w-[70%] md:w-[60%] lg:w-[45%] items-between p-4 left-1/2 -translate-x-1/2 h-auto overflow-y-auto transition-all duration-400 ease-in-out max-h-screen w-[45%] shadow-lg/30 rounded-xl z-[100]"
   [class]="setStyle()"
-  [ngClass]="isOpen() ? 'translate-y-20 opacity-100' : '-translate-y-20 opacity-0'"
+  [ngClass]="isOpen() ? 'translate-y-10 opacity-100' : '-translate-y-20 opacity-0'"
 >
-  <span class="flex items-center gap-3"
-    ><app-icon [name]="alertService.status()" class="w-9"></app-icon
+  <span class="flex items-center mt-3 gap-3"
+    ><app-icon [name]="alertService.status()" class="w-6"></app-icon
     ><span class="flex flex-col">
       @for (msg of messages(); track $index) {
-      <p class="text-lg text-slate-800">{{ msg }}</p>
+      <p class="text-sm md:text-md text-slate-800">{{ msg }}</p>
       }
     </span>
   </span>
@@ -27,3 +29,4 @@
     ></app-icon>
   </div>
 </div>
+<!-- } -->

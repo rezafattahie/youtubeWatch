@@ -35,7 +35,10 @@ export class Login {
           Validators.minLength(3),
           Validators.maxLength(15),
         ]),
-        email: new FormControl('', [Validators.email]),
+        email: new FormControl('', [
+          Validators.email,
+          this.loginMode == 'Join' ? Validators.required : Validators.nullValidator,
+        ]),
         stayLogin: new FormControl(false),
       });
     }
@@ -88,8 +91,8 @@ export class Login {
                   day: '2-digit',
                   month: 'long',
                   year: 'numeric',
-                  hour:'2-digit',
-                  minute:'2-digit'
+                  hour: '2-digit',
+                  minute: '2-digit',
                 }).format(new Date()),
               });
             } else {
@@ -115,7 +118,10 @@ export class Login {
             this.loginService.loggedinMember.set(res.name);
             this.alertService.show({
               status: 'info',
-              message: [`Dear ${res.name}!`, 'Glad you joined us. We hope you have a great time getting started.'],
+              message: [
+                `Dear ${res.name}!`,
+                'Glad you joined us. We hope you have a great time getting started.',
+              ],
               isOpen: true,
             });
             this.router.navigate(['/easygerman']);

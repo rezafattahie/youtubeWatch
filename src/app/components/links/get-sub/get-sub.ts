@@ -55,8 +55,7 @@ export class GetSub {
           this.alertService.show({
             status: 'failed',
             message: [
-              'The secondary server for downloading subtitles is temporarily unavailable.',
-              'Please try again over the next few days.',
+              'The secondary server for downloading subtitles is temporarily unavailable. Please try again over the next few days.',
             ],
             isOpen: true,
           });
